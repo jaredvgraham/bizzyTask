@@ -43,3 +43,9 @@ body {
 .fade-in {
   animation: fadeIn 1s ease-in-out;
 }
+
+.underline-thin {
+  text-decoration: underline;
+  text-decoration-thickness: 1px; /* Adjust the thickness as needed */
+  text-underline-offset: 2px; /* Adjust the offset as needed */
+}

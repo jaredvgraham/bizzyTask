@@ -44,7 +44,7 @@ const CreateBusiness = () => {
         }
       }
 
-      router.push(`/business/${businessRef.id}`);
+      router.push(`/business/${businessRef.id}/overview`);
     } catch (error) {
       console.error("Error creating business: ", error);
     }

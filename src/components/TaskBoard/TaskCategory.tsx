@@ -1,5 +1,11 @@
 import React from "react";
-import { FiChevronDown, FiChevronUp, FiCheckCircle } from "react-icons/fi";
+import {
+  FiChevronDown,
+  FiChevronUp,
+  FiCheckCircle,
+  FiTrash,
+} from "react-icons/fi";
+import TaskItem from "./TaskItem";
 
 interface Task {
   id: string;
@@ -22,6 +28,7 @@ interface TaskCategoryProps {
   hiddenTasks: Set<string>;
   onToggleCategory: (categoryId: string) => void;
   onDeleteTask: (categoryId: string, taskId: string) => void;
+  onDeleteDescription: (taskId: string, description: string) => void;
   onToggleTaskVisibility: (taskId: string) => void;
   onAddDescription: (taskId: string, description: string) => void;
   onDescriptionChange: (taskId: string, description: string) => void;
@@ -29,6 +36,7 @@ interface TaskCategoryProps {
   onTaskInputChange: (name: string, categoryId: string) => void;
   onToggleTaskCompleted: (categoryId: string, taskId: string) => void;
   onToggleCategoryCompleted: (categoryId: string) => void;
+  onDeleteCategory: (categoryId: string) => void; // Add this line
   newTask: { name: string; categoryId: string };
 }
 
@@ -39,6 +47,7 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
   hiddenTasks,
   onToggleCategory,
   onDeleteTask,
+  onDeleteDescription,
   onToggleTaskVisibility,
   onAddDescription,
   onDescriptionChange,
@@ -46,6 +55,7 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
   onTaskInputChange,
   onToggleTaskCompleted,
   onToggleCategoryCompleted,
+  onDeleteCategory, // Add this line
   newTask,
 }) => {
   const isExpanded = expandedCategory === category.id;
@@ -57,8 +67,8 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
       }`}
     >
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold mb-2">{category.name}</h3>
-        <div className="flex items-center space-x-2">
+        <h3 className="text-2xl font-light mb-2">{category.name}</h3>
+        <div className="flex items-center space-x-6">
           <button
             onClick={() => onToggleCategoryCompleted(category.id)}
             className={`ml-2 ${
@@ -69,88 +79,40 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
           </button>
           <button
             onClick={() => onToggleCategory(category.id)}
-            className="text-blue-500 ml-2"
+            className="text-blue-500 ml-2 p-3"
           >
-            {isExpanded ? <FiChevronUp /> : <FiChevronDown />}
+            {isExpanded ? (
+              <FiChevronUp size={24} />
+            ) : (
+              <FiChevronDown size={24} />
+            )}
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeleteCategory(category.id);
+            }}
+            className="text-gray-500 hover:text-red-500 ml-6"
+          >
+            <FiTrash />
           </button>
         </div>
       </div>
       {isExpanded && (
         <>
           {category.tasks.map((task) => (
-            <div
+            <TaskItem
               key={task.id}
-              className="mb-4 border-b"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex justify-between items-center p-2">
-                <div>
-                  <h4 className="font-bold">{task.name}</h4>
-                  {!hiddenTasks.has(task.id) && (
-                    <ul className="list-disc pl-5">
-                      {task.descriptions &&
-                        task.descriptions.map((description, index) => (
-                          <li key={index}>{description}</li>
-                        ))}
-                    </ul>
-                  )}
-                </div>
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onToggleTaskCompleted(category.id, task.id);
-                    }}
-                    className={`${
-                      task.completed ? "text-green-500" : "text-gray-500"
-                    }`}
-                  >
-                    <FiCheckCircle />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteTask(category.id, task.id);
-                    }}
-                    className="text-red-500"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onToggleTaskVisibility(task.id);
-                    }}
-                    className="text-blue-500 ml-2"
-                  >
-                    {hiddenTasks.has(task.id) ? "Show" : "Hide"}
-                  </button>
-                </div>
-              </div>
-              {!hiddenTasks.has(task.id) && (
-                <>
-                  <input
-                    type="text"
-                    value={newDescriptions[task.id] || ""}
-                    onChange={(e) =>
-                      onDescriptionChange(task.id, e.target.value)
-                    }
-                    placeholder="Add Description"
-                    className="mr-2 p-2 border rounded"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onAddDescription(task.id, newDescriptions[task.id] || "");
-                    }}
-                    className="bg-indigo-400 text-white p-2 rounded mb-2"
-                  >
-                    Add Description
-                  </button>
-                </>
-              )}
-            </div>
+              task={task}
+              categoryId={category.id}
+              newDescription={newDescriptions[task.id] || ""}
+              hidden={hiddenTasks.has(task.id)}
+              onDeleteTask={onDeleteTask}
+              onDeleteDescription={onDeleteDescription}
+              onToggleVisibility={onToggleTaskVisibility}
+              onAddDescription={onAddDescription}
+              onDescriptionChange={onDescriptionChange}
+            />
           ))}
           <div className="mt-4" onClick={(e) => e.stopPropagation()}>
             <input
@@ -166,7 +128,7 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
                 e.stopPropagation();
                 onAddTask({ name: newTask.name, categoryId: category.id });
               }}
-              className="bg-green-500 text-white p-2 rounded"
+              className="bg-yellow-500 text-white p-2 rounded"
             >
               Add Task
             </button>

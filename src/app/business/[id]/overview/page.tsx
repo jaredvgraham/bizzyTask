@@ -1,8 +1,6 @@
+import BusinessWorkspace from "@/pages/BusinessWorkspace";
 import OverviewPage from "@/pages/OverviewPage";
-import React from "react";
 
-const page = () => {
-  return <OverviewPage />;
-};
-
-export default page;
+export default function page({ params }: { params: { id: string } }) {
+  return <OverviewPage params={params} />;
+}

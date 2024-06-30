@@ -50,7 +50,7 @@ const Sidebar = () => {
 
   const isInBusiness = pathname.startsWith(`/business/${id}`);
   const sidebarColorClass = isInBusiness
-    ? "bg-gradient-to-b from-white to-blue-50 fade-in"
+    ? "bg-gradient-to-b from-slate-50 to-slate-100 fade-in"
     : "bg-slate-50";
 
   const headingText = isInBusiness ? "Business Plan Assistant" : "BizFast";
@@ -58,12 +58,12 @@ const Sidebar = () => {
   const headingColor = "text-black";
 
   const headingStyle = isInBusiness
-    ? "text-3xl font-light text-center"
+    ? "text-3xl font-light text-center underline-thin"
     : "text-2xl font-bold text-center";
 
   return (
     <div
-      className={`w-64 ${sidebarColorClass} text-black flex flex-col border-2 border-slate-300 h-screen transition-all duration-500`}
+      className={`w-64 ${sidebarColorClass} text-black flex flex-col border-2 border-slate-300 h-screen transition-all duration-500 bg-  `}
     >
       <div className="p-4 flex-shrink-0">
         <h2 className={`${headingColor} ${headingStyle}`}>{headingText}</h2>

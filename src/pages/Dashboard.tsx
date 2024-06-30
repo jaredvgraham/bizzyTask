@@ -102,7 +102,7 @@ const Dashboard = () => {
                 <ProgressCalculator businessId={business.id} />
               </div>
               <button
-                onClick={() => router.push(`/business/${business.id}`)}
+                onClick={() => router.push(`/business/${business.id}/overview`)}
                 className="mt-4 w-full bg-gray-800 text-white py-2 px-4 rounded hover:bg-gradient-to-r hover:from-gray-900  hover:to-teal-700"
               >
                 View Business
