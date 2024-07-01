@@ -9,18 +9,20 @@ import { doc, getDoc } from "firebase/firestore";
 
 const Navbar = () => {
   const pathname = usePathname();
-  const isDashboard = pathname === "/dashboard";
+  const isDashboard = pathname && pathname === "/dashboard";
   const [businessName, setBusinessName] = useState("");
 
   useEffect(() => {
     const fetchBusinessName = async () => {
-      const pathParts = pathname.split("/");
-      if (pathParts.length >= 3 && pathParts[1] === "business") {
-        const businessId = pathParts[2];
-        const businessDoc = await getDoc(doc(db, "businesses", businessId));
-        if (businessDoc.exists()) {
-          const businessData = businessDoc.data();
-          setBusinessName(businessData.name);
+      if (pathname) {
+        const pathParts = pathname.split("/");
+        if (pathParts.length >= 3 && pathParts[1] === "business") {
+          const businessId = pathParts[2];
+          const businessDoc = await getDoc(doc(db, "businesses", businessId));
+          if (businessDoc.exists()) {
+            const businessData = businessDoc.data();
+            setBusinessName(businessData.name);
+          }
         }
       }
     };

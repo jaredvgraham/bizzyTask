@@ -11,22 +11,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-
-interface Task {
-  id: string;
-  name: string;
-  descriptions: string[];
-  completed: boolean;
-  createdAt: Date;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  tasks: Task[];
-  completed: boolean;
-  createdAt: Date; // Add createdAt field
-}
+import { Category, Task } from "@/types";
 
 const useCategories = (businessId: string) => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -109,6 +94,7 @@ const useCategories = (businessId: string) => {
           createdAt: new Date(),
         },
       ]);
+      console.log("Category added successfully:", newCategoryName);
     } catch (error) {
       console.error("Error adding category: ", error);
     }

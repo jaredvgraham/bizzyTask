@@ -24,7 +24,7 @@ const TaskBoard = ({ businessId, expanded }: TaskBoardProps) => {
     setCategories,
     toggleCategoryCompleted,
     handleDeleteCategory,
-    handleAddCategory,
+    addCategory,
     editCategoryName,
   } = useCategories(businessId);
   const {
@@ -46,6 +46,16 @@ const TaskBoard = ({ businessId, expanded }: TaskBoardProps) => {
     handleEditDescription,
   } = useTasks(categories, setCategories, businessId);
   const [newCategoryName, setNewCategoryName] = useState("");
+
+  const handleAddCategory = () => {
+    if (newCategoryName.trim() === "") {
+      console.log("Category name is empty");
+      return;
+    }
+    console.log("Adding category:", newCategoryName);
+    addCategory(newCategoryName);
+    setNewCategoryName("");
+  };
 
   return (
     <div
