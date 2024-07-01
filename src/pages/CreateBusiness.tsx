@@ -27,6 +27,7 @@ const CreateBusiness = () => {
         type,
         userId: user.uid, // Include the userId here
         progress: 0, // Initialize progress to 0
+        createdAt: new Date(), // Add a timestamp for when the business was created
       });
 
       // Load template categories and tasks
@@ -39,7 +40,10 @@ const CreateBusiness = () => {
         for (const category of template.categories) {
           await addDoc(
             collection(db, "businesses", businessRef.id, "categories"),
-            { name: category.name }
+            {
+              name: category.name,
+              createdAt: new Date(), // Add the current timestamp
+            }
           );
         }
       }

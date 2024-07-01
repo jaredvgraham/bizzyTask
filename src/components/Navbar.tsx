@@ -33,13 +33,13 @@ const Navbar = () => {
       <div className="container mx-auto flex justify-between items-center p-4">
         <div className="flex items-center">
           <Image
-            src="/logo.png"
+            src="/logo3.png"
             alt="Business Plan Assistant"
             width={40}
             height={40}
           />
         </div>
-        <span className="text-lg font-bold ml-20 text-gray-800">
+        <span className="text-xl font-normal ml-20 pl-15 text-gray-800">
           {isDashboard ? "BizFast" : businessName || "Business Plan Assistant"}
         </span>
         <ul className="flex space-x-4 text-gray-800">

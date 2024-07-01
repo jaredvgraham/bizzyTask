@@ -1,10 +1,46 @@
 {
   "categories": [
     {
+      "name": "Frontend"
+    },
+    {
+      "name": "Backend"
+    },
+    {
       "name": "Endpoints"
     },
     {
+      "name": "Websockets"
+    },
+    {
+      "name": "Database"
+    },
+    {
       "name": "APIs"
+    },
+    {
+      "name": "Authentication"
+    },
+    {
+      "name": "Authorization"
+    },
+
+    {
+      "name": "Security"
+    },
+
+    {
+      "name": "Deployment"
+    },
+
+    {
+      "name": "Scalability"
+    },
+    {
+      "name": "Performance"
+    },
+    {
+      "name": "SEO"
     }
   ]
 }

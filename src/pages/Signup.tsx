@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { auth } from "../lib/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import Link from "next/link";
 
 const SignUp = () => {
   const [error, setError] = useState<string | null>(null);
@@ -95,6 +96,17 @@ const SignUp = () => {
             </button>
           </div>
         </form>
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">
+            Already have an have an account?{" "}
+            <Link
+              href="/signup"
+              className="text-indigo-600 hover:text-indigo-500"
+            >
+              Sign In
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

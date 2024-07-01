@@ -49,3 +49,14 @@ body {
   text-decoration-thickness: 1px; /* Adjust the thickness as needed */
   text-underline-offset: 2px; /* Adjust the offset as needed */
 }
+
+/* global.css or any other CSS file included in your project */
+.thin-line-through {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  text-decoration-color: #77797c; /* Tailwind's gray-300 color */
+}
+
+.btn-yellow {
+  background-color: #fbbf24; /* Tailwind's yellow-400 color */
+}

@@ -1,11 +1,15 @@
 import React from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   FiChevronDown,
   FiChevronUp,
   FiCheckCircle,
   FiTrash,
+  FiEdit,
+  FiSave,
 } from "react-icons/fi";
 import TaskItem from "./TaskItem";
+import handleEnterSubmit from "@/utils/handleEnterSubmit";
 
 interface Task {
   id: string;
@@ -28,7 +32,7 @@ interface TaskCategoryProps {
   hiddenTasks: Set<string>;
   onToggleCategory: (categoryId: string) => void;
   onDeleteTask: (categoryId: string, taskId: string) => void;
-  onDeleteDescription: (taskId: string, description: string) => void;
+  onDeleteDescription: (taskId: string, description: { text: string }) => void;
   onToggleTaskVisibility: (taskId: string) => void;
   onAddDescription: (taskId: string, description: string) => void;
   onDescriptionChange: (taskId: string, description: string) => void;
@@ -37,6 +41,16 @@ interface TaskCategoryProps {
   onToggleTaskCompleted: (categoryId: string, taskId: string) => void;
   onToggleCategoryCompleted: (categoryId: string) => void;
   onDeleteCategory: (categoryId: string) => void; // Add this line
+  onEditDescription: (
+    taskId: string,
+    oldDescription: { text: string },
+    newDescription: string
+  ) => void;
+  onToggleDescriptionCompleted: (
+    taskId: string,
+    description: { text: string }
+  ) => void; // Add this line
+  onEditCategoryName: (categoryId: string, newName: string) => void;
   newTask: { name: string; categoryId: string };
 }
 
@@ -56,19 +70,65 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
   onToggleTaskCompleted,
   onToggleCategoryCompleted,
   onDeleteCategory, // Add this line
+  onToggleDescriptionCompleted,
+  onEditCategoryName,
+  onEditDescription,
+
   newTask,
 }) => {
   const isExpanded = expandedCategory === category.id;
+  const [isEditing, setIsEditing] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState(category.name);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
+
+  const handleEditCategoryName = () => {
+    if (newCategoryName.trim() !== "") {
+      onEditCategoryName(category.id, newCategoryName);
+      setIsEditing(false);
+    }
+  };
 
   return (
     <div
       className={`border p-4 rounded-lg shadow cursor-pointer ${
-        isExpanded ? "col-span-3" : ""
+        isExpanded
+          ? "col-span-1 lg:col-span-2 xl:col-span-3"
+          : "col-span-1 sm:col-span-2 lg:col-span-1"
       }`}
     >
-      <div className="flex justify-between items-center">
-        <h3 className="text-2xl font-light mb-2">{category.name}</h3>
-        <div className="flex items-center space-x-6">
+      <div className="flex justify-between items-center ">
+        <div className="flex items-center space-x-2">
+          {isEditing ? (
+            <input
+              type="text"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              onBlur={handleEditCategoryName}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleEditCategoryName();
+                }
+              }}
+              className="border rounded p-2"
+              ref={inputRef}
+            />
+          ) : (
+            <h3
+              className={`text-2xl font-light mb-2  ${
+                isExpanded && "underline-thin"
+              }`}
+            >
+              {category.name}
+            </h3>
+          )}
+        </div>
+        <div className="flex items-center space-x-10">
           <button
             onClick={() => onToggleCategoryCompleted(category.id)}
             className={`ml-2 ${
@@ -78,8 +138,17 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
             <FiCheckCircle />
           </button>
           <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEditing((prev) => !prev);
+            }}
+            className="text-blue-500 hover:text-blue-700"
+          >
+            {isEditing ? <FiSave /> : <FiEdit />}
+          </button>
+          <button
             onClick={() => onToggleCategory(category.id)}
-            className="text-blue-500 ml-2 p-3"
+            className="text-blue-500  "
           >
             {isExpanded ? (
               <FiChevronUp size={24} />
@@ -92,7 +161,7 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
               e.stopPropagation();
               onDeleteCategory(category.id);
             }}
-            className="text-gray-500 hover:text-red-500 ml-6"
+            className="text-gray-500 hover:text-red-500 "
           >
             <FiTrash />
           </button>
@@ -112,6 +181,9 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
               onToggleVisibility={onToggleTaskVisibility}
               onAddDescription={onAddDescription}
               onDescriptionChange={onDescriptionChange}
+              onToggleTaskCompleted={onToggleTaskCompleted}
+              onToggleDescriptionCompleted={onToggleDescriptionCompleted}
+              onEditDescription={onEditDescription}
             />
           ))}
           <div className="mt-4" onClick={(e) => e.stopPropagation()}>
@@ -122,13 +194,18 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
               placeholder="Task Name"
               className="mr-2 p-2 border rounded"
               onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) =>
+                handleEnterSubmit(e, () =>
+                  onAddTask({ name: newTask.name, categoryId: category.id })
+                )
+              }
             />
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onAddTask({ name: newTask.name, categoryId: category.id });
               }}
-              className="bg-yellow-500 text-white p-2 rounded"
+              className="btn-yellow text-white p-2 rounded"
             >
               Add Task
             </button>

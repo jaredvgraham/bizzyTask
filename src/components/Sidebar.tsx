@@ -55,65 +55,65 @@ const Sidebar = () => {
 
   const headingText = isInBusiness ? "Business Plan Assistant" : "BizFast";
 
-  const headingColor = "text-black";
+  const headingColor = "text-teal-600";
 
-  const headingStyle = isInBusiness
-    ? "text-3xl font-light text-center underline-thin"
-    : "text-2xl font-bold text-center";
+  const headingStyle = "text-2xl font-bold text-center";
 
   return (
-    <div
-      className={`w-64 ${sidebarColorClass} text-black flex flex-col border-2 border-slate-300 h-screen transition-all duration-500 bg-  `}
-    >
-      <div className="p-4 flex-shrink-0">
-        <h2 className={`${headingColor} ${headingStyle}`}>{headingText}</h2>
-      </div>
-      <nav className="flex-1 p-4 flex flex-col justify-between">
-        <ul>
-          {dynamicLinks.map((link) => (
-            <li key={link.href} className="mb-2">
+    <div className="relative">
+      <div
+        className={`w-64 ${sidebarColorClass} text-black flex flex-col border-r border-slate-300 h-screen transition-all duration-500 sticky top-0 shadow-lg`}
+      >
+        <div className="p-6">
+          <h2 className={`${headingColor} ${headingStyle}`}>{headingText}</h2>
+        </div>
+        <nav className="flex-1 p-6 flex flex-col justify-between">
+          <ul className="space-y-2">
+            {dynamicLinks.map((link) => (
+              <li key={link.href} className="mb-1">
+                <Link
+                  href={link.href}
+                  className={`flex items-center p-3 rounded-lg text-gray-800 hover:bg-teal-500 hover:text-white transition duration-300 ${
+                    pathname === link.href ? "bg-teal-500 text-white" : ""
+                  }`}
+                >
+                  {link.icon}
+                  <span className="ml-3">{link.label}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <ul className="space-y-2">
+            <li>
               <Link
-                href={link.href}
-                className={`flex items-center p-2 rounded-lg text-gray-800 hover:bg-slate-100 transition duration-200 cursor-pointer ${
-                  pathname === link.href ? "bg-slate-100" : ""
-                }`}
+                href="/settings"
+                className="flex items-center p-3 rounded-lg text-gray-800 hover:bg-teal-500 hover:text-white transition duration-300"
               >
-                {link.icon}
-                <span className="ml-3">{link.label}</span>
+                <FiSettings />
+                <span className="ml-3">Settings</span>
               </Link>
             </li>
-          ))}
-        </ul>
-        <ul className="space-y-2">
-          <li>
-            <Link
-              href="/settings"
-              className="flex items-center p-2 rounded-lg text-gray-800 hover:bg-slate-100 transition duration-200 cursor-pointer"
-            >
-              <FiSettings />
-              <span className="ml-3">Settings</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/profile"
-              className="flex items-center p-2 rounded-lg text-gray-800 hover:bg-slate-100 transition duration-200 cursor-pointer"
-            >
-              <FiUser />
-              <span className="ml-3">Profile</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/logout"
-              className="flex items-center p-2 rounded-lg text-gray-800 hover:bg-slate-100 transition duration-200 cursor-pointer"
-            >
-              <FiLogOut />
-              <span className="ml-3">Logout</span>
-            </Link>
-          </li>
-        </ul>
-      </nav>
+            <li>
+              <Link
+                href="/profile"
+                className="flex items-center p-3 rounded-lg text-gray-800 hover:bg-teal-500 hover:text-white transition duration-300"
+              >
+                <FiUser />
+                <span className="ml-3">Profile</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/logout"
+                className="flex items-center p-3 rounded-lg text-gray-800 hover:bg-teal-500 hover:text-white transition duration-300"
+              >
+                <FiLogOut />
+                <span className="ml-3">Logout</span>
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
   );
 };
