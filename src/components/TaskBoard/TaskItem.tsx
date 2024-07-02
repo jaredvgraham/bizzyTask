@@ -13,18 +13,21 @@ interface TaskItemProps {
   newDescription: string;
   hidden: boolean;
   onDeleteTask: (categoryId: string, taskId: string) => void;
-  onDeleteDescription: (taskId: string, description: { text: string }) => void;
+  onDeleteDescription: (
+    taskId: string,
+    description: { text: string; createdAt: Date; completed: boolean }
+  ) => void;
   onToggleVisibility: (taskId: string) => void;
   onAddDescription: (taskId: string, description: string) => void;
   onDescriptionChange: (taskId: string, description: string) => void;
   onToggleTaskCompleted: (categoryId: string, taskId: string) => void; // Add this line
   onToggleDescriptionCompleted: (
     taskId: string,
-    description: { text: string }
+    description: { text: string; createdAt: Date; completed: boolean }
   ) => void; // Add this line
   onEditDescription: (
     taskId: string,
-    oldDescription: { text: string },
+    oldDescription: { text: string; createdAt: Date; completed: boolean },
     newDescription: string
   ) => void;
 }
@@ -59,8 +62,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
   return (
     <div className="mb-4 border-b" onClick={(e) => e.stopPropagation()}>
       <div className="flex justify-between items-start p-2">
-        <div className="flex flex-col">
-          <h3 className={`font-regular text-2xl mb-4 `}>{task.name}</h3>
+        <div className="flex flex-col border-l-2 pl-2">
+          <h3 className={`font-normal text-3xl mb-4 `}>{task.name}</h3>
           {!hidden && (
             <ul className="pl-2 text-black">
               {task.descriptions &&

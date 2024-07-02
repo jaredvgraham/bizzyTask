@@ -14,10 +14,10 @@ import {
 
 const Sidebar = () => {
   const pathname = usePathname();
-  const { id } = useParams();
+  const { id } = useParams() ?? {};
 
   const getDynamicLinks = () => {
-    if (pathname.startsWith(`/business/${id}`)) {
+    if (pathname?.startsWith(`/business/${id}`)) {
       return [
         {
           href: `/business/${id}/overview`,
@@ -48,7 +48,7 @@ const Sidebar = () => {
 
   const dynamicLinks = getDynamicLinks();
 
-  const isInBusiness = pathname.startsWith(`/business/${id}`);
+  const isInBusiness = pathname?.startsWith(`/business/${id}`) || false;
   const sidebarColorClass = isInBusiness
     ? "bg-gradient-to-b from-slate-50 to-slate-100 fade-in"
     : "bg-slate-50";

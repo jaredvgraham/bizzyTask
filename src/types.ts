@@ -13,3 +13,12 @@ export interface Category {
   completed: boolean;
   createdAt: Date;
 }
+
+export interface BusinessType {
+  id: string;
+  name: string;
+  categories: Category[];
+  createdAt: Date;
+  type: string;
+  description: string;
+}

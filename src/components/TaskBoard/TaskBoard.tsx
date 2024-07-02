@@ -1,13 +1,5 @@
 import { useState } from "react";
-import {
-  collection,
-  addDoc,
-  deleteDoc,
-  doc,
-  getDoc,
-  updateDoc,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
+
 import TaskCategory from "./TaskCategory";
 import AddCategoryForm from "./AddCategoryForm";
 import useCategories from "@/hooks/useCategories";
@@ -29,7 +21,7 @@ const TaskBoard = ({ businessId, expanded }: TaskBoardProps) => {
   } = useCategories(businessId);
   const {
     newTask,
-    setNewTask,
+
     newDescriptions,
     hiddenTasks,
     expandedCategory,

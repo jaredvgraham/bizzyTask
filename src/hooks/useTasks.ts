@@ -1,17 +1,23 @@
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import {
-  collection,
-  doc,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  getDoc,
-  arrayUnion,
-  arrayRemove,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
+  addTask,
+  addDescription,
+  editDescription,
+  toggleDescriptionCompleted,
+  deleteTask,
+  deleteDescription,
+  toggleTaskCompletedFire,
+} from "@/services/firebaseTaskService";
+import { Category } from "@/types";
 
-const useTasks = (categories, setCategories, businessId) => {
+const useTasks = (
+  categories: Category[],
+  setCategories: {
+    (value: SetStateAction<Category[]>): void;
+    (arg0: any): void;
+  },
+  businessId: string
+) => {
   const [newTask, setNewTask] = useState({ name: "", categoryId: "" });
   const [newDescriptions, setNewDescriptions] = useState<{
     [taskId: string]: string;
@@ -22,35 +28,13 @@ const useTasks = (categories, setCategories, businessId) => {
   const handleAddTask = async (task: { name: string; categoryId: string }) => {
     if (task.name.trim() === "" || task.categoryId.trim() === "") return;
     try {
-      const tasksRef = collection(
-        db,
-        "businesses",
-        businessId,
-        "categories",
-        task.categoryId,
-        "tasks"
-      );
-      const newTaskRef = await addDoc(tasksRef, {
-        name: task.name,
-        descriptions: [],
-        completed: false,
-        createdAt: new Date(), // Add timestamp
-      });
+      const newTask = await addTask(businessId, task.categoryId, task.name);
       setCategories(
         categories.map((category) => {
           if (category.id === task.categoryId) {
             return {
               ...category,
-              tasks: [
-                ...category.tasks,
-                {
-                  id: newTaskRef.id,
-                  name: task.name,
-                  descriptions: [],
-                  completed: false,
-                  createdAt: new Date(), // Add timestamp
-                },
-              ],
+              tasks: [...category.tasks, newTask],
             };
           }
           return category;
@@ -65,22 +49,7 @@ const useTasks = (categories, setCategories, businessId) => {
   const handleAddDescription = async (taskId: string, description: string) => {
     if (description.trim() === "") return;
     try {
-      const taskRef = doc(
-        db,
-        "businesses",
-        businessId,
-        "categories",
-        expandedCategory!,
-        "tasks",
-        taskId
-      );
-      await updateDoc(taskRef, {
-        descriptions: arrayUnion({
-          text: description,
-          createdAt: new Date(),
-          completed: false,
-        }), // Add timestamp and completed status
-      });
+      await addDescription(businessId, expandedCategory!, taskId, description);
       setCategories(
         categories.map((category) => {
           if (category.id === expandedCategory) {
@@ -97,7 +66,7 @@ const useTasks = (categories, setCategories, businessId) => {
                         createdAt: new Date(),
                         completed: false,
                       },
-                    ], // Add timestamp and completed status
+                    ],
                   };
                 }
                 return task;
@@ -115,46 +84,41 @@ const useTasks = (categories, setCategories, businessId) => {
 
   const handleEditDescription = async (
     taskId: string,
-    oldDescription: { text: string },
+    oldDescription: { text: string; createdAt: Date; completed: boolean },
     newDescription: string
   ) => {
     try {
-      const taskRef = doc(
-        db,
-        "businesses",
+      await editDescription(
         businessId,
-        "categories",
         expandedCategory!,
-        "tasks",
-        taskId
+        taskId,
+        oldDescription,
+        newDescription
       );
-      const taskDoc = await getDoc(taskRef);
-      if (taskDoc.exists()) {
-        const taskData = taskDoc.data();
-        const updatedDescriptions = taskData.descriptions.map((desc) => {
-          if (desc.text === oldDescription.text) {
-            return { ...desc, text: newDescription };
+      setCategories(
+        categories.map((category) => {
+          if (category.id === expandedCategory) {
+            return {
+              ...category,
+              tasks: category.tasks.map((task) => {
+                if (task.id === taskId) {
+                  return {
+                    ...task,
+                    descriptions: task.descriptions.map((desc) => {
+                      if (desc.text === oldDescription.text) {
+                        return { ...desc, text: newDescription };
+                      }
+                      return desc;
+                    }),
+                  };
+                }
+                return task;
+              }),
+            };
           }
-          return desc;
-        });
-        await updateDoc(taskRef, { descriptions: updatedDescriptions });
-        setCategories(
-          categories.map((category) => {
-            if (category.id === expandedCategory) {
-              return {
-                ...category,
-                tasks: category.tasks.map((task) => {
-                  if (task.id === taskId) {
-                    return { ...task, descriptions: updatedDescriptions };
-                  }
-                  return task;
-                }),
-              };
-            }
-            return category;
-          })
-        );
-      }
+          return category;
+        })
+      );
     } catch (error) {
       console.error("Error editing description: ", error);
     }
@@ -162,45 +126,39 @@ const useTasks = (categories, setCategories, businessId) => {
 
   const handleToggleDescriptionCompleted = async (
     taskId: string,
-    description: { text: string }
+    description: { text: string; createdAt: Date; completed: boolean }
   ) => {
     try {
-      const taskRef = doc(
-        db,
-        "businesses",
+      await toggleDescriptionCompleted(
         businessId,
-        "categories",
         expandedCategory!,
-        "tasks",
-        taskId
+        taskId,
+        description
       );
-      const taskDoc = await getDoc(taskRef);
-      if (taskDoc.exists()) {
-        const taskData = taskDoc.data();
-        const updatedDescriptions = taskData.descriptions.map((desc) => {
-          if (desc.text === description.text) {
-            return { ...desc, completed: !desc.completed };
+      setCategories(
+        categories.map((category) => {
+          if (category.id === expandedCategory) {
+            return {
+              ...category,
+              tasks: category.tasks.map((task) => {
+                if (task.id === taskId) {
+                  return {
+                    ...task,
+                    descriptions: task.descriptions.map((desc) => {
+                      if (desc.text === description.text) {
+                        return { ...desc, completed: !desc.completed };
+                      }
+                      return desc;
+                    }),
+                  };
+                }
+                return task;
+              }),
+            };
           }
-          return desc;
-        });
-        await updateDoc(taskRef, { descriptions: updatedDescriptions });
-        setCategories(
-          categories.map((category) => {
-            if (category.id === expandedCategory) {
-              return {
-                ...category,
-                tasks: category.tasks.map((task) => {
-                  if (task.id === taskId) {
-                    return { ...task, descriptions: updatedDescriptions };
-                  }
-                  return task;
-                }),
-              };
-            }
-            return category;
-          })
-        );
-      }
+          return category;
+        })
+      );
     } catch (error) {
       console.error("Error toggling description completion: ", error);
     }
@@ -208,19 +166,9 @@ const useTasks = (categories, setCategories, businessId) => {
 
   const handleDeleteTask = async (categoryId: string, taskId: string) => {
     try {
-      await deleteDoc(
-        doc(
-          db,
-          "businesses",
-          businessId,
-          "categories",
-          categoryId,
-          "tasks",
-          taskId
-        )
-      );
+      await deleteTask(businessId, categoryId, taskId);
       setCategories(
-        categories.map((category: { id: string; tasks: any[] }) => {
+        categories.map((category) => {
           if (category.id === categoryId) {
             return {
               ...category,
@@ -237,21 +185,15 @@ const useTasks = (categories, setCategories, businessId) => {
 
   const handleDeleteDescription = async (
     taskId: string,
-    description: { text: string }
+    description: { text: string; createdAt: Date; completed: boolean }
   ) => {
     try {
-      const taskRef = doc(
-        db,
-        "businesses",
+      await deleteDescription(
         businessId,
-        "categories",
         expandedCategory!,
-        "tasks",
-        taskId
+        taskId,
+        description
       );
-      await updateDoc(taskRef, {
-        descriptions: arrayRemove(description),
-      });
       setCategories(
         categories.map((category) => {
           if (category.id === expandedCategory) {
@@ -307,38 +249,23 @@ const useTasks = (categories, setCategories, businessId) => {
 
   const toggleTaskCompleted = async (categoryId: string, taskId: string) => {
     try {
-      const taskRef = doc(
-        db,
-        "businesses",
-        businessId,
-        "categories",
-        categoryId,
-        "tasks",
-        taskId
+      await toggleTaskCompletedFire(businessId, categoryId, taskId);
+      setCategories(
+        categories.map((category) => {
+          if (category.id === categoryId) {
+            return {
+              ...category,
+              tasks: category.tasks.map((task) => {
+                if (task.id === taskId) {
+                  return { ...task, completed: !task.completed };
+                }
+                return task;
+              }),
+            };
+          }
+          return category;
+        })
       );
-      const taskDoc = await getDoc(taskRef);
-      if (taskDoc.exists()) {
-        const taskData = taskDoc.data();
-        await updateDoc(taskRef, {
-          completed: !taskData.completed,
-        });
-        setCategories(
-          categories.map((category) => {
-            if (category.id === categoryId) {
-              return {
-                ...category,
-                tasks: category.tasks.map((task) => {
-                  if (task.id === taskId) {
-                    return { ...task, completed: !task.completed };
-                  }
-                  return task;
-                }),
-              };
-            }
-            return category;
-          })
-        );
-      }
     } catch (error) {
       console.error("Error toggling task completion: ", error);
     }

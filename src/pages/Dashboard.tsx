@@ -32,15 +32,23 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchBusinesses = async () => {
       if (user) {
+        // Combined query to fetch businesses created by the user or where the user is a team member
         const q = query(
           collection(db, "businesses"),
-          where("userId", "==", user.uid)
+          where("teamMembers", "array-contains", user.email)
         );
         const querySnapshot = await getDocs(q);
         const userBusinesses = querySnapshot.docs.map(
           (doc) => ({ id: doc.id, ...doc.data() } as Business)
         );
-        setBusinesses(userBusinesses);
+
+        // Use a Set to ensure uniqueness
+        const uniqueBusinesses = new Map();
+        userBusinesses.forEach((business) => {
+          uniqueBusinesses.set(business.id, business);
+        });
+
+        setBusinesses(Array.from(uniqueBusinesses.values()));
       }
     };
 

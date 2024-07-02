@@ -26,6 +26,7 @@ const CreateBusiness = () => {
         description,
         type,
         userId: user.uid, // Include the userId here
+        teamMembers: [user.email],
         progress: 0, // Initialize progress to 0
         createdAt: new Date(), // Add a timestamp for when the business was created
       });

@@ -14,7 +14,7 @@ import handleEnterSubmit from "@/utils/handleEnterSubmit";
 interface Task {
   id: string;
   name: string;
-  descriptions: string[];
+  descriptions: { text: string; createdAt: Date; completed: boolean }[];
   completed: boolean;
 }
 
@@ -32,7 +32,10 @@ interface TaskCategoryProps {
   hiddenTasks: Set<string>;
   onToggleCategory: (categoryId: string) => void;
   onDeleteTask: (categoryId: string, taskId: string) => void;
-  onDeleteDescription: (taskId: string, description: { text: string }) => void;
+  onDeleteDescription: (
+    taskId: string,
+    description: { text: string; createdAt: Date; completed: boolean }
+  ) => void;
   onToggleTaskVisibility: (taskId: string) => void;
   onAddDescription: (taskId: string, description: string) => void;
   onDescriptionChange: (taskId: string, description: string) => void;
@@ -43,12 +46,12 @@ interface TaskCategoryProps {
   onDeleteCategory: (categoryId: string) => void; // Add this line
   onEditDescription: (
     taskId: string,
-    oldDescription: { text: string },
+    oldDescription: { text: string; createdAt: Date; completed: boolean },
     newDescription: string
   ) => void;
   onToggleDescriptionCompleted: (
     taskId: string,
-    description: { text: string }
+    description: { text: string; createdAt: Date; completed: boolean }
   ) => void; // Add this line
   onEditCategoryName: (categoryId: string, newName: string) => void;
   newTask: { name: string; categoryId: string };
@@ -101,6 +104,7 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
           ? "col-span-1 lg:col-span-2 xl:col-span-3"
           : "col-span-1 sm:col-span-2 lg:col-span-1"
       }`}
+      onClick={!isExpanded ? () => onToggleCategory(category.id) : undefined}
     >
       <div className="flex justify-between items-center ">
         <div className="flex items-center space-x-2">
@@ -120,9 +124,9 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
             />
           ) : (
             <h3
-              className={`text-2xl font-light mb-2  ${
-                isExpanded && "underline-thin"
-              }`}
+              className={`${
+                isExpanded && "text-4xl text-gray-600 underline-thin"
+              } text-3xl font-light mb-2  `}
             >
               {category.name}
             </h3>
@@ -147,7 +151,10 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
             {isEditing ? <FiSave /> : <FiEdit />}
           </button>
           <button
-            onClick={() => onToggleCategory(category.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleCategory(category.id);
+            }}
             className="text-blue-500  "
           >
             {isExpanded ? (

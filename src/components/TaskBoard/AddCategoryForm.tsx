@@ -1,4 +1,5 @@
 import React from "react";
+import handleEnterSubmit from "@/utils/handleEnterSubmit";
 
 interface AddCategoryFormProps {
   newCategoryName: string;
@@ -17,6 +18,7 @@ const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
         type="text"
         value={newCategoryName}
         onChange={(e) => onCategoryNameChange(e.target.value)}
+        onKeyDown={(e) => handleEnterSubmit(e, onAddCategory)}
         placeholder="New Category Name"
         className="mr-2 p-2 border rounded"
       />

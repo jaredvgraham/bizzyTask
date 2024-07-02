@@ -1,9 +1,11 @@
 "use client";
-import { useState } from "react";
+
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { auth } from "../lib/firebase";
+import { auth, db } from "../lib/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import Link from "next/link";
 
 const SignUp = () => {
@@ -22,11 +24,22 @@ const SignUp = () => {
     }),
     onSubmit: async (values) => {
       try {
-        await createUserWithEmailAndPassword(
+        const userCredential = await createUserWithEmailAndPassword(
           auth,
           values.email,
           values.password
         );
+        const user = userCredential.user;
+
+        // Save user to Firestore with email as the document ID
+        await setDoc(doc(db, "users", user.uid), {
+          email: user.email,
+          uid: user.uid,
+          createdAt: new Date(),
+        });
+
+        // Redirect to dashboard or other page
+        // router.push("/dashboard"); // Uncomment and use if you have a router set up
       } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message);
@@ -98,7 +111,7 @@ const SignUp = () => {
         </form>
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
-            Already have an have an account?{" "}
+            Already have an account?{" "}
             <Link
               href="/signup"
               className="text-indigo-600 hover:text-indigo-500"

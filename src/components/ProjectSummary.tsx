@@ -1,12 +1,13 @@
 import ProgressCalculator from "@/components/ProgressCalculator";
+import { BusinessType } from "@/types";
 
-const ProjectSummary = ({ business }) => {
+const ProjectSummary = ({ business }: { business: BusinessType }) => {
   function sendToTaskBoard() {
     window.location.href = `/business/${business.id}/task-board`;
   }
   return (
     <div
-      className="border p-4 rounded-lg shadow cursor-pointer"
+      className="border p-4 rounded-lg shadow cursor-pointer transform transition-transform duration-200 hover:scale-105"
       onClick={sendToTaskBoard}
     >
       <h2 className="text-xl font-bold mb-2">Project Summary</h2>

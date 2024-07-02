@@ -5,7 +5,7 @@ import TaskBoard from "@/components/TaskBoard/TaskBoard";
 import Sidebar from "@/components/Sidebar";
 
 const TaskBoardPage = () => {
-  const { id } = useParams();
+  const { id } = useParams() || {};
 
   return (
     <div className="flex min-h-screen ">

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-const ProgressCalculator = ({ businessId }) => {
+const ProgressCalculator = ({ businessId }: { businessId: string }) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -36,6 +36,7 @@ const ProgressCalculator = ({ businessId }) => {
           const tasks = tasksSnapshot.docs.map((taskDoc) => ({
             id: taskDoc.id,
             ...taskDoc.data(),
+            completed: taskDoc.data().completed, // Add the 'completed' property
           }));
 
           totalTasks += tasks.length;
@@ -55,7 +56,7 @@ const ProgressCalculator = ({ businessId }) => {
     calculateProgress();
   }, [businessId]);
 
-  const getColor = (progress) => {
+  const getColor = (progress: number) => {
     if (progress < 30) return "bg-red-400 text-red-400";
     if (progress < 70) return "bg-yellow-500 text-yellow-500";
     return "bg-green-500 text-green-500";
