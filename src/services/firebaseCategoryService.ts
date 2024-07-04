@@ -133,8 +133,7 @@
 // };
 
 import { Category, Task } from "@/types";
-import { db } from "@/lib/firebaseAdmin";
-import admin from "firebase-admin";
+import { db, admin } from "@/lib/firebaseAdmin";
 
 export const getCategoriesWithTasks = async (
   businessId: string
@@ -270,7 +269,7 @@ export const updateCategoryName = async (
   businessId: string,
   categoryId: string,
   newName: string
-): Promise<void> => {
+): Promise<Category> => {
   try {
     const categoryRef = db
       .collection("businesses")
@@ -278,6 +277,16 @@ export const updateCategoryName = async (
       .collection("categories")
       .doc(categoryId);
     await categoryRef.update({ name: newName });
+
+    const updatedCategoryDoc = await categoryRef.get();
+    if (updatedCategoryDoc.exists) {
+      return {
+        id: updatedCategoryDoc.id,
+        ...updatedCategoryDoc.data(),
+      } as Category;
+    } else {
+      throw new Error("Category not found after update");
+    }
   } catch (error) {
     console.error("Error updating category name: ", error);
     throw error;

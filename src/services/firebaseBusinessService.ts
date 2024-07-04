@@ -1,8 +1,8 @@
 // services/firebaseBusinessService.ts
-import { db } from "@/lib/firebaseAdmin";
+import { db, admin } from "@/lib/firebaseAdmin";
 import { Business } from "@/types";
 import webAppTemplate from "@/templates/webApp.json";
-import admin from "firebase-admin";
+// import admin from "firebase-admin";
 
 export const getBusinesses = async (userEmail: string): Promise<Business[]> => {
   try {

@@ -5,6 +5,8 @@ import {
 } from "@/services/firebaseCategoryService";
 
 export async function GET(req: NextRequest) {
+  console.log("GET request received for cats +++++++++++");
+
   try {
     const { searchParams } = new URL(req.url);
     const businessId = req.nextUrl.pathname.split("/")[3]; // Extract businessId from URL path
