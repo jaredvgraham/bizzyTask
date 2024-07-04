@@ -14,11 +14,20 @@ export interface Category {
   createdAt: Date;
 }
 
-export interface BusinessType {
+// export interface BusinessType {
+//   id: string;
+//   name: string;
+//   categories: Category[];
+//   createdAt: Date;
+//   type: string;
+//   description: string;
+// }
+export interface Business {
   id: string;
   name: string;
-  categories: Category[];
-  createdAt: Date;
-  type: string;
   description: string;
+  type: string;
+  progress: number;
+  teamMembers: string[];
+  createdAt: Date;
 }

@@ -1,5 +1,6 @@
-import { useState } from "react";
+// Im currenly implementing redux to manage the state of the task board have fun following this state lol
 
+import { useState } from "react";
 import TaskCategory from "./TaskCategory";
 import AddCategoryForm from "./AddCategoryForm";
 import useCategories from "@/hooks/useCategories";
@@ -80,7 +81,7 @@ const TaskBoard = ({ businessId, expanded }: TaskBoardProps) => {
             onTaskInputChange={handleTaskInputChange}
             onToggleTaskCompleted={toggleTaskCompleted}
             onToggleCategoryCompleted={toggleCategoryCompleted}
-            onDeleteCategory={handleDeleteCategory} // Add this line
+            onDeleteCategory={handleDeleteCategory}
             onToggleDescriptionCompleted={handleToggleDescriptionCompleted}
             onEditCategoryName={editCategoryName}
             onEditDescription={handleEditDescription}

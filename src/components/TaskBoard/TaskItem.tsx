@@ -20,11 +20,11 @@ interface TaskItemProps {
   onToggleVisibility: (taskId: string) => void;
   onAddDescription: (taskId: string, description: string) => void;
   onDescriptionChange: (taskId: string, description: string) => void;
-  onToggleTaskCompleted: (categoryId: string, taskId: string) => void; // Add this line
+  onToggleTaskCompleted: (categoryId: string, taskId: string) => void;
   onToggleDescriptionCompleted: (
     taskId: string,
     description: { text: string; createdAt: Date; completed: boolean }
-  ) => void; // Add this line
+  ) => void;
   onEditDescription: (
     taskId: string,
     oldDescription: { text: string; createdAt: Date; completed: boolean },
@@ -42,7 +42,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onToggleVisibility,
   onAddDescription,
   onDescriptionChange,
-  onToggleTaskCompleted, // Add this line
+  onToggleTaskCompleted,
   onToggleDescriptionCompleted,
   onEditDescription,
 }) => {

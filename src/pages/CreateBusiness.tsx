@@ -6,6 +6,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import webAppTemplate from "@/templates/webApp.json"; // Importing the web app template
 import { useAuth } from "@/context/AuthContext";
+import { axiosPrivate } from "@/axios/axios";
 
 const CreateBusiness = () => {
   const { user } = useAuth();
@@ -15,43 +16,20 @@ const CreateBusiness = () => {
   const router = useRouter();
 
   const handleCreateBusiness = async () => {
-    if (!user) {
-      console.error("No user is logged in");
-      return;
-    }
-
     try {
-      const businessRef = await addDoc(collection(db, "businesses"), {
+      const res = await axiosPrivate.post("/business", {
         name,
         description,
         type,
-        userId: user.uid, // Include the userId here
-        teamMembers: [user.email],
-        progress: 0, // Initialize progress to 0
-        createdAt: new Date(), // Add a timestamp for when the business was created
+        userId: user?.uid,
+        userEmail: user?.email,
       });
+      console.log(res);
+      const id = res.data.bsuinessId;
 
-      // Load template categories and tasks
-      let template = null;
-      if (type === "web-app") {
-        template = webAppTemplate;
-      }
-
-      if (template) {
-        for (const category of template.categories) {
-          await addDoc(
-            collection(db, "businesses", businessRef.id, "categories"),
-            {
-              name: category.name,
-              createdAt: new Date(), // Add the current timestamp
-            }
-          );
-        }
-      }
-
-      router.push(`/business/${businessRef.id}/overview`);
+      router.push(`/business/${id}`);
     } catch (error) {
-      console.error("Error creating business: ", error);
+      console.log(error);
     }
   };
 
