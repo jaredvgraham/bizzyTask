@@ -46,27 +46,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
-export async function DELETE(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const businessId = searchParams.get("businessId");
-    if (!businessId) {
-      return NextResponse.json(
-        { error: "Business ID is required" },
-        { status: 400 }
-      );
-    }
-    await deleteBusiness(businessId as string);
-    return NextResponse.json(
-      { message: "Business deleted success" },
-      { status: 204 }
-    );
-  } catch (error) {
-    console.log("Error deleting business: ", error);
-    return NextResponse.json(
-      { error: "Error deleting business" },
-      { status: 500 }
-    );
-  }
-}

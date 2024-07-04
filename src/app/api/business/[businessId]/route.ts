@@ -5,10 +5,9 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(req: NextRequest) {
-  console.log("DELETE request received+++++++++++");
   try {
-    const { searchParams } = new URL(req.url);
-    const businessId = searchParams.get("businessId");
+    const businessId = req.nextUrl.pathname.split("/").pop();
+    console.log("DELETE request received for businessId:", businessId);
     if (!businessId) {
       return NextResponse.json(
         { error: "Business ID is required" },

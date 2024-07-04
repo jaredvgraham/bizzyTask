@@ -7,6 +7,7 @@ import {
   updateCategoryName,
 } from "@/services/firebaseCategoryService";
 import { Category } from "@/types";
+import { axiosPrivate } from "@/axios/axios";
 
 const useCategories = (businessId: string) => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -14,10 +15,12 @@ const useCategories = (businessId: string) => {
   useEffect(() => {
     const fetchCategoriesAndTasks = async () => {
       try {
-        const fetchedCategories = await getCategoriesWithTasks(businessId);
-        setCategories(fetchedCategories);
+        const response = await axiosPrivate.get(
+          `/business/${businessId}/categories`
+        );
+        setCategories(response.data);
       } catch (error) {
-        console.error("Error fetching categories and tasks: ", error);
+        console.log("Error fetching categories: ", error);
       }
     };
     fetchCategoriesAndTasks();

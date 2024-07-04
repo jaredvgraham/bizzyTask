@@ -184,18 +184,13 @@ const Dashboard = () => {
 
   const handleDelete = async (businessId: string) => {
     try {
-      const response = await axiosPrivate.delete(`/business/`, {
-        params: { businessId },
-      });
-      if (response.status === 204) {
-        setBusinesses(
-          businesses.filter((business) => business.id !== businessId)
-        );
-      } else {
-        console.error("Error deleting business");
-      }
+      const response = await axiosPrivate.delete(`/business/${businessId}`);
+
+      setBusinesses(
+        businesses.filter((business) => business.id !== businessId)
+      );
     } catch (error) {
-      console.error("Error deleting business: ", error);
+      console.error("Error deleting business:", error);
     }
   };
 
