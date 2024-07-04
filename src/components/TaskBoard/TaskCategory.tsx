@@ -72,7 +72,7 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
   onTaskInputChange,
   onToggleTaskCompleted,
   onToggleCategoryCompleted,
-  onDeleteCategory, // Add this line
+  onDeleteCategory,
   onToggleDescriptionCompleted,
   onEditCategoryName,
   onEditDescription,

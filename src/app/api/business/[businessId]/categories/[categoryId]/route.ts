@@ -78,7 +78,7 @@ export async function DELETE(
         { status: 400 }
       );
     }
-
+    //
     await deleteCategory(businessId, categoryId);
 
     return NextResponse.json(

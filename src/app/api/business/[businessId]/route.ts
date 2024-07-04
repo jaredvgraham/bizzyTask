@@ -4,9 +4,12 @@ import {
 } from "@/services/firebaseBusinessService";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { businessId: string } }
+) {
   try {
-    const businessId = req.nextUrl.pathname.split("/").pop();
+    const { businessId } = params;
     console.log("DELETE request received for businessId:", businessId);
     if (!businessId) {
       return NextResponse.json(
@@ -28,10 +31,12 @@ export async function DELETE(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { businessId: string } }
+) {
   try {
-    const { searchParams } = new URL(req.url);
-    const businessId = searchParams.get("businessId");
+    const { businessId } = params;
     if (!businessId) {
       return NextResponse.json(
         { error: "Business ID is required" },

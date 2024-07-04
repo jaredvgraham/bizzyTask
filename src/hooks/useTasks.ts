@@ -1,13 +1,5 @@
 import { SetStateAction, useState } from "react";
-import {
-  addTask,
-  addDescription,
-  editDescription,
-  toggleDescriptionCompleted,
-  deleteTask,
-  deleteDescription,
-  toggleTaskCompletedFire,
-} from "@/services/firebaseTaskService";
+import { axiosPrivate } from "@/axios/axios";
 import { Category } from "@/types";
 
 const useTasks = (
@@ -28,7 +20,11 @@ const useTasks = (
   const handleAddTask = async (task: { name: string; categoryId: string }) => {
     if (task.name.trim() === "" || task.categoryId.trim() === "") return;
     try {
-      const newTask = await addTask(businessId, task.categoryId, task.name);
+      const response = await axiosPrivate.post(
+        `/business/${businessId}/categories/${task.categoryId}/tasks`,
+        { taskName: task.name }
+      );
+      const newTask = response.data;
       setCategories(
         categories.map((category) => {
           if (category.id === task.categoryId) {
@@ -49,7 +45,10 @@ const useTasks = (
   const handleAddDescription = async (taskId: string, description: string) => {
     if (description.trim() === "") return;
     try {
-      await addDescription(businessId, expandedCategory!, taskId, description);
+      await axiosPrivate.patch(
+        `/business/${businessId}/categories/${expandedCategory}/tasks/${taskId}`,
+        { action: "add-description", description }
+      );
       setCategories(
         categories.map((category) => {
           if (category.id === expandedCategory) {
@@ -88,12 +87,13 @@ const useTasks = (
     newDescription: string
   ) => {
     try {
-      await editDescription(
-        businessId,
-        expandedCategory!,
-        taskId,
-        oldDescription,
-        newDescription
+      await axiosPrivate.patch(
+        `/business/${businessId}/categories/${expandedCategory}/tasks/${taskId}`,
+        {
+          action: "edit-description",
+          oldDescription,
+          newDescription,
+        }
       );
       setCategories(
         categories.map((category) => {
@@ -129,11 +129,9 @@ const useTasks = (
     description: { text: string; createdAt: Date; completed: boolean }
   ) => {
     try {
-      await toggleDescriptionCompleted(
-        businessId,
-        expandedCategory!,
-        taskId,
-        description
+      await axiosPrivate.patch(
+        `/business/${businessId}/categories/${expandedCategory}/tasks/${taskId}`,
+        { action: "toggle-description-completed", description }
       );
       setCategories(
         categories.map((category) => {
@@ -166,7 +164,9 @@ const useTasks = (
 
   const handleDeleteTask = async (categoryId: string, taskId: string) => {
     try {
-      await deleteTask(businessId, categoryId, taskId);
+      await axiosPrivate.delete(
+        `/business/${businessId}/categories/${categoryId}/tasks/${taskId}`
+      );
       setCategories(
         categories.map((category) => {
           if (category.id === categoryId) {
@@ -188,11 +188,9 @@ const useTasks = (
     description: { text: string; createdAt: Date; completed: boolean }
   ) => {
     try {
-      await deleteDescription(
-        businessId,
-        expandedCategory!,
-        taskId,
-        description
+      await axiosPrivate.patch(
+        `/business/${businessId}/categories/${expandedCategory}/tasks/${taskId}`,
+        { action: "delete-description", description }
       );
       setCategories(
         categories.map((category) => {
@@ -249,7 +247,10 @@ const useTasks = (
 
   const toggleTaskCompleted = async (categoryId: string, taskId: string) => {
     try {
-      await toggleTaskCompletedFire(businessId, categoryId, taskId);
+      const response = await axiosPrivate.patch(
+        `/business/${businessId}/categories/${categoryId}/tasks/${taskId}`,
+        { action: "toggle-completed" }
+      );
       setCategories(
         categories.map((category) => {
           if (category.id === categoryId) {
@@ -257,7 +258,7 @@ const useTasks = (
               ...category,
               tasks: category.tasks.map((task) => {
                 if (task.id === taskId) {
-                  return { ...task, completed: !task.completed };
+                  return { ...task, completed: response.data.completed };
                 }
                 return task;
               }),

@@ -4,12 +4,15 @@ import {
   createCategory,
 } from "@/services/firebaseCategoryService";
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { businessId: string } }
+) {
   console.log("GET request received for cats +++++++++++");
 
   try {
     const { searchParams } = new URL(req.url);
-    const businessId = req.nextUrl.pathname.split("/")[3]; // Extract businessId from URL path
+    const { businessId } = params; // Extract businessId from URL path
     if (!businessId) {
       return NextResponse.json(
         { error: "Business ID is required" },
@@ -27,10 +30,13 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { businessId: string } }
+) {
   try {
     const { name } = await req.json();
-    const businessId = req.nextUrl.pathname.split("/")[3]; // Extract businessId from URL path
+    const { businessId } = params; // Extract businessId from URL path
     if (!businessId || !name) {
       return NextResponse.json(
         { error: "Business ID and category name are required" },
