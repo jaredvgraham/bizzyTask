@@ -2,8 +2,6 @@ import "./globals.css";
 import { ReactNode } from "react";
 import { AuthProvider } from "../context/AuthContext";
 
-import Sidebar from "@/components/Sidebar";
-import Navbar from "@/components/Navbar";
 import ClientWrapper from "@/components/ClientWrapper";
 
 export const metadata = {

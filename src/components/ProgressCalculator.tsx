@@ -1,59 +1,20 @@
 import { useState, useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+
+import { axiosPrivate } from "@/axios/axios";
 
 const ProgressCalculator = ({ businessId }: { businessId: string }) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const calculateProgress = async () => {
+    const fetchProgress = async () => {
       try {
-        const categoriesRef = collection(
-          db,
-          "businesses",
-          businessId,
-          "categories"
-        );
-        const categoriesSnapshot = await getDocs(categoriesRef);
-        const fetchedCategories = categoriesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        let totalTasks = 0;
-        let completedTasks = 0;
-
-        for (const category of fetchedCategories) {
-          const tasksRef = collection(
-            db,
-            "businesses",
-            businessId,
-            "categories",
-            category.id,
-            "tasks"
-          );
-          const tasksSnapshot = await getDocs(tasksRef);
-          const tasks = tasksSnapshot.docs.map((taskDoc) => ({
-            id: taskDoc.id,
-            ...taskDoc.data(),
-            completed: taskDoc.data().completed, // Add the 'completed' property
-          }));
-
-          totalTasks += tasks.length;
-          completedTasks += tasks.filter((task) => task.completed).length;
-        }
-
-        if (totalTasks > 0) {
-          setProgress(Math.round((completedTasks / totalTasks) * 100));
-        } else {
-          setProgress(0);
-        }
+        const res = await axiosPrivate.get(`/business/${businessId}/progress`);
+        setProgress(res.data.progress);
       } catch (error) {
-        console.error("Error calculating progress: ", error);
+        console.log("Error fetching progress: ", error);
       }
     };
-
-    calculateProgress();
+    fetchProgress();
   }, [businessId]);
 
   const getColor = (progress: number) => {

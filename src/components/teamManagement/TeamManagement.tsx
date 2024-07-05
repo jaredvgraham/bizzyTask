@@ -1,15 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  collection,
-  doc,
-  getDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
+
+import { axiosPrivate } from "@/axios/axios";
+import handleEnterSubmit from "@/utils/handleEnterSubmit";
 
 interface TeamManagementProps {
   businessId: string;
@@ -17,18 +11,16 @@ interface TeamManagementProps {
 
 const TeamManagement: React.FC<TeamManagementProps> = ({ businessId }) => {
   const [teamMembers, setTeamMembers] = useState<string[]>([]);
-  const [newMemberEmail, setNewMemberEmail] = useState("");
+  const [newMemberEmail, setNewMemberEmail] = useState<string>("");
 
   useEffect(() => {
     const fetchTeamMembers = async () => {
       try {
-        const businessRef = doc(db, "businesses", businessId);
-        const businessDoc = await getDoc(businessRef);
-        if (businessDoc.exists()) {
-          setTeamMembers(businessDoc.data().teamMembers || []);
-        }
+        const res = await axiosPrivate.get(`/business/${businessId}/team`);
+
+        setTeamMembers(res.data);
       } catch (error) {
-        console.error("Error fetching team members: ", error);
+        console.log("Error fetching team members: ", error);
       }
     };
     fetchTeamMembers();
@@ -36,25 +28,13 @@ const TeamManagement: React.FC<TeamManagementProps> = ({ businessId }) => {
 
   const addTeamMember = async () => {
     if (newMemberEmail.trim() === "") return;
+
     try {
-      const userRef = doc(db, "users", newMemberEmail);
-      const userDoc = await getDoc(userRef);
-
-      if (userDoc.exists()) {
-        const businessRef = doc(db, "businesses", businessId);
-        await updateDoc(businessRef, {
-          teamMembers: arrayUnion(newMemberEmail),
-        });
-
-        await updateDoc(userRef, {
-          businesses: arrayUnion(businessId),
-        });
-
-        setTeamMembers((prev) => [...prev, newMemberEmail]);
-        setNewMemberEmail("");
-      } else {
-        console.error("User does not exist.");
-      }
+      const res = await axiosPrivate.post(`/business/${businessId}/team`, {
+        email: newMemberEmail,
+      });
+      setTeamMembers((prev) => [...prev, newMemberEmail]);
+      setNewMemberEmail("");
     } catch (error) {
       console.error("Error adding team member: ", error);
     }
@@ -62,24 +42,12 @@ const TeamManagement: React.FC<TeamManagementProps> = ({ businessId }) => {
 
   const removeTeamMember = async (email: string) => {
     try {
-      const businessRef = doc(db, "businesses", businessId);
-      await updateDoc(businessRef, {
-        teamMembers: arrayRemove(email),
+      await axiosPrivate.delete(`/business/${businessId}/team`, {
+        data: { email },
       });
-
-      const userRef = doc(db, "users", email);
-      const userDoc = await getDoc(userRef);
-      if (userDoc.exists()) {
-        await updateDoc(userRef, {
-          businesses: arrayRemove(businessId),
-        });
-      } else {
-        console.error("User does not exist.");
-      }
-
       setTeamMembers((prev) => prev.filter((member) => member !== email));
     } catch (error) {
-      console.error("Error removing team member: ", error);
+      console.error("Error removing team member:", error);
     }
   };
 
@@ -91,6 +59,7 @@ const TeamManagement: React.FC<TeamManagementProps> = ({ businessId }) => {
           type="email"
           value={newMemberEmail}
           onChange={(e) => setNewMemberEmail(e.target.value)}
+          onKeyDown={(e) => handleEnterSubmit(e, addTeamMember)}
           placeholder="Enter team member email"
           className="p-2 border rounded mr-2"
         />
@@ -102,7 +71,7 @@ const TeamManagement: React.FC<TeamManagementProps> = ({ businessId }) => {
         </button>
       </div>
       <ul>
-        {teamMembers.map((member) => (
+        {teamMembers?.map((member) => (
           <li key={member} className="flex justify-between items-center mb-2">
             <span>{member}</span>
             <button

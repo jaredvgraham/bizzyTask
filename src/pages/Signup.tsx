@@ -3,13 +3,14 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { auth, db } from "../lib/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { axiosPublic } from "@/axios/axios";
 
 const SignUp = () => {
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const formik = useFormik({
     initialValues: {
@@ -24,28 +25,16 @@ const SignUp = () => {
     }),
     onSubmit: async (values) => {
       try {
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          values.email,
-          values.password
-        );
-        const user = userCredential.user;
+        const res = await axiosPublic.post("/auth/sign-up", values);
+        // Handle successful signup
+        const { token } = res.data;
 
-        // Save user to Firestore with email as the document ID
-        await setDoc(doc(db, "users", user.uid), {
-          email: user.email,
-          uid: user.uid,
-          createdAt: new Date(),
-        });
+        // Store the token in local storage or cookies
+        localStorage.setItem("token", token);
 
-        // Redirect to dashboard or other page
-        // router.push("/dashboard"); // Uncomment and use if you have a router set up
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unknown error occurred");
-        }
+        router.push("/signin"); // Redirect to dashboard or other page after successful signup
+      } catch (err: any) {
+        setError(err.message);
       }
     },
   });
@@ -113,7 +102,7 @@ const SignUp = () => {
           <p className="text-sm text-gray-600">
             Already have an account?{" "}
             <Link
-              href="/signup"
+              href="/signin"
               className="text-indigo-600 hover:text-indigo-500"
             >
               Sign In

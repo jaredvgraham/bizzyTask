@@ -1,7 +1,7 @@
 import ProgressCalculator from "@/components/ProgressCalculator";
-import { BusinessType } from "@/types";
+import { Business } from "@/types";
 
-const ProjectSummary = ({ business }: { business: BusinessType }) => {
+const ProjectSummary = ({ business }: { business: Business }) => {
   function sendToTaskBoard() {
     window.location.href = `/business/${business.id}/task-board`;
   }

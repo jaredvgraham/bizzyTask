@@ -1,14 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { auth } from "../lib/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import axios from "axios";
+import { getAuth, signInWithCustomToken } from "firebase/auth";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { axiosPublic } from "@/axios/axios";
 
 const SignIn = () => {
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const auth = getAuth();
 
   const formik = useFormik({
     initialValues: {
@@ -23,13 +27,16 @@ const SignIn = () => {
     }),
     onSubmit: async (values) => {
       try {
-        await signInWithEmailAndPassword(auth, values.email, values.password);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unknown error occurred");
-        }
+        const res = await axiosPublic.post("/auth/sign-in", values);
+        const { token } = res.data;
+
+        // Authenticate with Firebase using custom token
+        await signInWithCustomToken(auth, token);
+
+        // Redirect to dashboard or other page after successful sign-in
+        router.push("/dashboard");
+      } catch (err: any) {
+        setError(err.response?.data?.error || "An unknown error occurred");
       }
     },
   });
