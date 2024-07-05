@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
+
 import { getAuth, signInWithCustomToken } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

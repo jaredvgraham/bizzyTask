@@ -22,7 +22,6 @@ const TaskBoard = ({ businessId, expanded }: TaskBoardProps) => {
   } = useCategories(businessId);
   const {
     newTask,
-
     newDescriptions,
     hiddenTasks,
     expandedCategory,
