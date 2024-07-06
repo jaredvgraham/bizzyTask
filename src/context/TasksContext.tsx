@@ -8,6 +8,7 @@ import React, {
 import { axiosPrivate } from "@/axios/axios";
 import { useCategories } from "@/context/CategoriesContext";
 import { useWebSocket } from "./WebSocketContext";
+import { Task } from "@/types";
 
 interface TasksContextType {
   newTask: { name: string; categoryId: string };
@@ -18,16 +19,22 @@ interface TasksContextType {
   hiddenTasks: Set<string>;
   expandedCategory: string | null;
   handleAddTask: (task: { name: string; categoryId: string }) => Promise<void>;
-  handleAddDescription: (taskId: string, description: string) => Promise<void>;
+  handleAddDescription: (
+    taskId: string,
+    description: string,
+    task: Task
+  ) => Promise<void>;
   handleEditDescription: (
     taskId: string,
     oldDescription: { text: string; createdAt: Date; completed: boolean },
-    newDescription: string
+    newDescription: string,
+    task: Task
   ) => Promise<void>;
   handleDeleteTask: (categoryId: string, taskId: string) => Promise<void>;
   handleDeleteDescription: (
     taskId: string,
-    description: { text: string; createdAt: Date; completed: boolean }
+    description: { text: string; createdAt: Date; completed: boolean },
+    task: Task
   ) => Promise<void>;
   toggleTaskVisibility: (taskId: string) => void;
   handleTaskInputChange: (name: string, categoryId: string) => void;
@@ -35,9 +42,14 @@ interface TasksContextType {
   toggleCategoryExpansion: (categoryId: string) => void;
   handleToggleDescriptionCompleted: (
     taskId: string,
-    description: { text: string; createdAt: Date; completed: boolean }
+    description: { text: string; createdAt: Date; completed: boolean },
+    task: Task
   ) => Promise<void>;
-  toggleTaskCompleted: (categoryId: string, taskId: string) => Promise<void>;
+  toggleTaskCompleted: (
+    categoryId: string,
+    taskId: string,
+    task: Task
+  ) => Promise<void>;
 }
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
@@ -58,7 +70,7 @@ export const TasksProvider: React.FC<{
   useEffect(() => {
     if (socket) {
       socket.on(
-        "ADD_TASK",
+        "TASK_ADDED",
         (data: {
           id: string;
           name: string;
@@ -82,7 +94,7 @@ export const TasksProvider: React.FC<{
       );
 
       socket.on(
-        "UPDATE_TASK",
+        "TASK_UPDATED",
         (data: {
           id: string;
           name: string;
@@ -107,7 +119,7 @@ export const TasksProvider: React.FC<{
         }
       );
 
-      socket.on("DELETE_TASK", (data: { id: string; categoryId: string }) => {
+      socket.on("TASK_DELETED", (data: { id: string; categoryId: string }) => {
         setCategories((prevCategories) =>
           prevCategories.map((category) => {
             if (category.id === data.categoryId) {
@@ -122,9 +134,9 @@ export const TasksProvider: React.FC<{
       });
 
       return () => {
-        socket.off("ADD_TASK");
-        socket.off("UPDATE_TASK");
-        socket.off("DELETE_TASK");
+        socket.off("TASK_ADDED");
+        socket.off("TASK_UPDATED");
+        socket.off("TASK_DELETED");
       };
     }
   }, [socket, setCategories]);
@@ -139,6 +151,14 @@ export const TasksProvider: React.FC<{
         }
       );
       const newTask = response.data;
+      console.log("frontend response from nextjs  ", newTask);
+      const taskToEmit = {
+        ...newTask,
+        categoryId: task.categoryId,
+      };
+      console.log("task to emit: that works ", taskToEmit);
+
+      socket?.emit("ADD_TASK", taskToEmit);
       setCategories((prevCategories) =>
         prevCategories.map((category) => {
           if (category.id === task.categoryId) {
@@ -156,16 +176,38 @@ export const TasksProvider: React.FC<{
     }
   };
 
-  const handleAddDescription = async (taskId: string, description: string) => {
+  const handleAddDescription = async (
+    taskId: string,
+    description: string,
+    task: Task
+  ) => {
     if (description.trim() === "") return;
     try {
-      await axiosPrivate.patch(
+      const res = await axiosPrivate.patch(
         `/business/${businessId}/categories/${expandedCategory}/tasks/${taskId}`,
         {
           action: "add-description",
           description,
         }
       );
+      const { newDescription } = res.data;
+      console.log(
+        "frontend response from nextjs for adding description: ",
+        newDescription
+      );
+
+      const taskToEmit = {
+        ...task,
+
+        categoryId: expandedCategory,
+
+        descriptions: [...task.descriptions, newDescription], // Include the new description
+        // Set this based on your logic
+      };
+
+      console.log("task to emit: ", taskToEmit);
+
+      socket?.emit("UPDATE_TASK", taskToEmit);
       setCategories((prevCategories) =>
         prevCategories.map((category) => {
           if (category.id === expandedCategory) {
@@ -201,10 +243,11 @@ export const TasksProvider: React.FC<{
   const handleEditDescription = async (
     taskId: string,
     oldDescription: { text: string; createdAt: Date; completed: boolean },
-    newDescription: string
+    newDescription: string,
+    task: Task
   ) => {
     try {
-      await axiosPrivate.patch(
+      const res = await axiosPrivate.patch(
         `/business/${businessId}/categories/${expandedCategory}/tasks/${taskId}`,
         {
           action: "edit-description",
@@ -212,6 +255,18 @@ export const TasksProvider: React.FC<{
           newDescription,
         }
       );
+      const taskToEmit = {
+        ...task,
+        categoryId: expandedCategory,
+        taskId: taskId,
+        descriptions: task.descriptions.map((desc) =>
+          desc.text === oldDescription.text
+            ? { ...desc, text: newDescription }
+            : desc
+        ),
+      };
+
+      socket?.emit("UPDATE_TASK", taskToEmit);
       setCategories((prevCategories) =>
         prevCategories.map((category) => {
           if (category.id === expandedCategory) {
@@ -243,16 +298,30 @@ export const TasksProvider: React.FC<{
 
   const handleToggleDescriptionCompleted = async (
     taskId: string,
-    description: { text: string; createdAt: Date; completed: boolean }
+    description: { text: string; createdAt: Date; completed: boolean },
+    task: Task
   ) => {
     try {
-      await axiosPrivate.patch(
+      const res = await axiosPrivate.patch(
         `/business/${businessId}/categories/${expandedCategory}/tasks/${taskId}`,
         {
           action: "toggle-description-completed",
           description,
         }
       );
+
+      const taskToEmit = {
+        ...task,
+        categoryId: expandedCategory,
+        taskId: taskId,
+        descriptions: task.descriptions.map((desc) =>
+          desc.text === description.text
+            ? { ...desc, completed: !desc.completed }
+            : desc
+        ),
+      };
+
+      socket?.emit("UPDATE_TASK", taskToEmit);
       setCategories((prevCategories) =>
         prevCategories.map((category) => {
           if (category.id === expandedCategory) {
@@ -287,6 +356,7 @@ export const TasksProvider: React.FC<{
       await axiosPrivate.delete(
         `/business/${businessId}/categories/${categoryId}/tasks/${taskId}`
       );
+      socket?.emit("DELETE_TASK", { id: taskId, categoryId });
       setCategories((prevCategories) =>
         prevCategories.map((category) => {
           if (category.id === categoryId) {
@@ -305,13 +375,24 @@ export const TasksProvider: React.FC<{
 
   const handleDeleteDescription = async (
     taskId: string,
-    description: { text: string; createdAt: Date; completed: boolean }
+    description: { text: string; createdAt: Date; completed: boolean },
+    task: Task
   ) => {
     try {
-      await axiosPrivate.patch(
+      const res = await axiosPrivate.patch(
         `/business/${businessId}/categories/${expandedCategory}/tasks/${taskId}`,
         { action: "delete-description", description }
       );
+      const updatedTask = res.data;
+      const taskToEmit = {
+        ...task,
+        categoryId: expandedCategory,
+        taskId: taskId,
+        descriptions: task.descriptions.filter(
+          (desc) => desc.text !== description.text
+        ),
+      };
+      socket?.emit("UPDATE_TASK", taskToEmit);
       setCategories((prevCategories) =>
         prevCategories.map((category) => {
           if (category.id === expandedCategory) {
@@ -365,7 +446,11 @@ export const TasksProvider: React.FC<{
     setExpandedCategory((prev) => (prev === categoryId ? null : categoryId));
   };
 
-  const toggleTaskCompleted = async (categoryId: string, taskId: string) => {
+  const toggleTaskCompleted = async (
+    categoryId: string,
+    taskId: string,
+    task: Task
+  ) => {
     try {
       const response = await axiosPrivate.patch(
         `/business/${businessId}/categories/${categoryId}/tasks/${taskId}`,
@@ -373,6 +458,18 @@ export const TasksProvider: React.FC<{
           action: "toggle-completed",
         }
       );
+      const updatedTask = response.data;
+
+      const taskToEmit = {
+        ...task,
+        categoryId: categoryId,
+        completed: updatedTask.completed,
+      };
+      console.log(
+        "task to emit from toggleTaskCompleted in tasksContext:",
+        taskToEmit
+      );
+      socket?.emit("UPDATE_TASK", taskToEmit);
       setCategories((prevCategories) =>
         prevCategories.map((category) => {
           if (category.id === categoryId) {

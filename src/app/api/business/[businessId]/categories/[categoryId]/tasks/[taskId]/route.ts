@@ -60,9 +60,14 @@ export async function PATCH(
       );
       return NextResponse.json(updatedTask, { status: 200 });
     } else if (action === "add-description") {
-      await addDescription(businessId, categoryId, taskId, description);
+      const newDescription = await addDescription(
+        businessId,
+        categoryId,
+        taskId,
+        description
+      );
       return NextResponse.json(
-        { message: "Description added successfully" },
+        { message: "Description added successfully", newDescription },
         { status: 200 }
       );
     } else if (action === "edit-description") {

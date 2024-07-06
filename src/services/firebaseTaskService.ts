@@ -129,6 +129,8 @@ export const addDescription = async (
         completed: false,
       }),
     });
+
+    return { text: description, createdAt: new Date(), completed: false };
   } catch (error) {
     console.error("Error adding description: ", error);
     throw error;

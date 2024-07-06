@@ -65,7 +65,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
                           handleEditDescription(
                             task.id,
                             description,
-                            editedDescription
+                            editedDescription,
+                            task
                           );
                           setEditingDescription(null);
                         }}
@@ -74,7 +75,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
                             handleEditDescription(
                               task.id,
                               description,
-                              editedDescription
+                              editedDescription,
+                              task
                             );
                             setEditingDescription(null);
                           }
@@ -96,7 +98,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
                           e.stopPropagation();
                           handleToggleDescriptionCompleted(
                             task.id,
-                            description
+                            description,
+                            task
                           );
                         }}
                         className={`ml-2 hover:text-green-400 ${
@@ -120,7 +123,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDeleteDescription(task.id, description);
+                          handleDeleteDescription(task.id, description, task);
                         }}
                         className="text-red-300 hover:text-red-500 ml-2"
                       >
@@ -136,7 +139,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              toggleTaskCompleted(categoryId, task.id);
+              toggleTaskCompleted(categoryId, task.id, task);
             }}
             className={`ml-2 hover:text-green-400 ${
               task.completed ? "text-green-500" : "text-gray-500"
@@ -177,7 +180,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
               onClick={(e) => e.stopPropagation()}
               onKeyDown={(e) =>
                 handleEnterSubmit(e, () => {
-                  handleAddDescription(task.id, newDescription);
+                  handleAddDescription(task.id, newDescription, task);
                   const target = e.target as HTMLTextAreaElement;
                   target.style.height = "auto";
                   handleDescriptionChange(task.id, "");
@@ -192,7 +195,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                handleAddDescription(task.id, newDescription);
+                handleAddDescription(task.id, newDescription, task);
                 const target = e.target as HTMLElement;
                 const textarea =
                   target.previousElementSibling as HTMLTextAreaElement;

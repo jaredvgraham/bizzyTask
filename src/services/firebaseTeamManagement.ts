@@ -17,17 +17,24 @@ export const getTeamMembers = async (businessId: string): Promise<string[]> => {
 
 export const addTeamMember = async (businessId: string, email: string) => {
   try {
-    const userRef = db.collection("users").doc(email);
-    const userDoc = await userRef.get();
-    if (userDoc.exists) {
+    const userSnapshot = await db
+      .collection("users")
+      .where("email", "==", email)
+      .get();
+    if (!userSnapshot.empty) {
+      const userDoc = userSnapshot.docs[0];
+      const userId = userDoc.id;
       const businessRef = db.collection("businesses").doc(businessId);
       await businessRef.update({
         teamMembers: admin.firestore.FieldValue.arrayUnion(email),
       });
 
-      await userRef.update({
-        businesses: admin.firestore.FieldValue.arrayUnion(businessId),
-      });
+      await db
+        .collection("users")
+        .doc(userId)
+        .update({
+          businesses: admin.firestore.FieldValue.arrayUnion(businessId),
+        });
     } else {
       throw new Error("User does not exist");
     }
