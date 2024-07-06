@@ -29,13 +29,14 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, description, type, userId, userEmail } = body;
+    const { name, description, type, userId, userEmail, template } = body;
     const bsuinessId = await createBusiness(
       name,
       description,
       type,
       userId,
-      userEmail
+      userEmail,
+      template
     );
     return NextResponse.json({ bsuinessId }, { status: 201 });
   } catch (error) {

@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import webAppTemplate from "@/templates/webApp.json"; // Importing the web app template
 import { useAuth } from "@/context/AuthContext";
 import { axiosPrivate } from "@/axios/axios";
+import axios from "axios";
 
 const CreateBusiness = () => {
   const { user } = useAuth();
@@ -17,12 +15,21 @@ const CreateBusiness = () => {
 
   const handleCreateBusiness = async () => {
     try {
+      // Generate a custom template using ChatGPT API
+      const templateResponse = await axiosPrivate.post("/template", {
+        type,
+        description,
+      });
+      const template = templateResponse.data.template;
+
+      // Create the business in Firestore with the template
       const res = await axiosPrivate.post("/business", {
         name,
         description,
         type,
         userId: user?.uid,
         userEmail: user?.email,
+        template: template, // Pass the parsed template
       });
       console.log(res);
       const id = res.data.bsuinessId;

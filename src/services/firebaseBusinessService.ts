@@ -25,7 +25,8 @@ export const createBusiness = async (
   description: string,
   type: string,
   userId: string,
-  userEmail: string
+  userEmail: string,
+  template: any
 ): Promise<string> => {
   try {
     const businessRef = await db.collection("businesses").add({
@@ -38,21 +39,40 @@ export const createBusiness = async (
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    let template = null;
-    if (type === "web-app") {
-      template = webAppTemplate;
-    }
-
     if (template) {
       for (const category of template.categories) {
-        await db
+        const categoryRef = await db
           .collection("businesses")
           .doc(businessRef.id)
           .collection("categories")
           .add({
             name: category.name,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            completed: false,
           });
+
+        if (category.tasks) {
+          for (const task of category.tasks) {
+            await db
+              .collection("businesses")
+              .doc(businessRef.id)
+              .collection("categories")
+              .doc(categoryRef.id)
+              .collection("tasks")
+              .add({
+                name: task.name,
+                descriptions: [
+                  {
+                    text: task.description,
+                    createdAt: new Date(),
+                    completed: false,
+                  },
+                ],
+                completed: false,
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+              });
+          }
+        }
       }
     }
 

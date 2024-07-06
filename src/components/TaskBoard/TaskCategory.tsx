@@ -28,7 +28,13 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
       }
     >
       <TaskCategoryHeader category={category} isExpanded={isExpanded} />
-      {isExpanded && <TaskList category={category} businessId={businessId} />}
+      {isExpanded && (
+        <TaskList
+          category={category}
+          businessId={businessId}
+          isExpanded={isExpanded}
+        />
+      )}
     </div>
   );
 };

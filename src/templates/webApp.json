@@ -1,7 +1,21 @@
 {
   "categories": [
     {
-      "name": "Frontend"
+      "name": "Frontend",
+      "tasks": [
+        {
+          "name": "example",
+          "description": "some description"
+        },
+        {
+          "name": "example",
+          "description": "some description"
+        },
+        {
+          "name": "example",
+          "description": "some description"
+        }
+      ]
     },
     {
       "name": "Backend"

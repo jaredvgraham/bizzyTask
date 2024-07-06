@@ -60,7 +60,7 @@ const TaskCategoryHeader: React.FC<TaskHeaderProps> = ({
         ) : (
           <h3
             className={`text-3xl font-light mb-2 ${
-              isExpanded && "text-4xl text-gray-600 underline-thin"
+              isExpanded && "text-4xl  underline-thin"
             }`}
           >
             {category.name}

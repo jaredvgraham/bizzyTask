@@ -7,9 +7,14 @@ import { Category } from "@/types";
 interface TaskListProps {
   category: Category;
   businessId: string;
+  isExpanded: boolean;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ category, businessId }) => {
+const TaskList: React.FC<TaskListProps> = ({
+  category,
+  businessId,
+  isExpanded,
+}) => {
   const {
     newTask,
     newDescriptions,
@@ -28,6 +33,7 @@ const TaskList: React.FC<TaskListProps> = ({ category, businessId }) => {
           newDescription={newDescriptions[task.id] || ""}
           hidden={hiddenTasks.has(task.id)}
           businessId={businessId}
+          isExpanded={isExpanded}
         />
       ))}
       <div className="mt-4" onClick={(e) => e.stopPropagation()}>

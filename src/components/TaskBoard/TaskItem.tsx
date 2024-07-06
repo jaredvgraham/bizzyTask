@@ -10,6 +10,7 @@ interface TaskItemProps {
   newDescription: string;
   hidden: boolean;
   businessId: string;
+  isExpanded: boolean;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -18,6 +19,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   newDescription,
   hidden,
   businessId,
+  isExpanded,
 }) => {
   const {
     handleAddDescription,
@@ -46,7 +48,13 @@ const TaskItem: React.FC<TaskItemProps> = ({
     <div className="mb-4 border-b" onClick={(e) => e.stopPropagation()}>
       <div className="flex justify-between items-start p-2">
         <div className="flex flex-col border-l-2 pl-2">
-          <h3 className={`font-normal text-3xl mb-4`}>{task.name}</h3>
+          <h3
+            className={`font-normal text-3xl mb-4 ${
+              isExpanded && "text-gray-700"
+            }`}
+          >
+            {task.name}
+          </h3>
           {!hidden && (
             <ul className="pl-2 text-black">
               {task.descriptions &&
