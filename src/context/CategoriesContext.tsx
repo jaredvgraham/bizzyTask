@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { axiosPrivate } from "@/axios/axios";
 import { Category } from "@/types";
+import { useWebSocket } from "./WebSocketContext";
 
 interface CategoriesContextType {
   categories: Category[];
@@ -20,6 +21,7 @@ export const CategoriesProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ businessId, children }) => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const { socket } = useWebSocket();
 
   useEffect(() => {
     const fetchCategoriesAndTasks = async () => {
@@ -35,6 +37,33 @@ export const CategoriesProvider: React.FC<{
     fetchCategoriesAndTasks();
   }, [businessId]);
 
+  useEffect(() => {
+    if (socket) {
+      socket.on("CATEGORY_ADDED", (data: Category) => {
+        setCategories((prevCategories) => [...prevCategories, data]);
+      });
+      socket.on("CATEGORY_DELETED", (data: { id: string }) => {
+        setCategories((prevCategories) =>
+          prevCategories.filter((category) => category.id !== data.id)
+        );
+      });
+      socket.on("CATEGORY_UPDATED", (data: Category) => {
+        console.log("data from websocket: ", data);
+        setCategories((prevCategories) =>
+          prevCategories.map((category) =>
+            category.id === data.id ? data : category
+          )
+        );
+      });
+
+      return () => {
+        socket.off("CATEGORY_ADDED");
+        socket.off("CATEGORY_DELETED");
+        socket.off("CATEGORY_UPDATED");
+      };
+    }
+  }, [socket, setCategories]);
+
   const addCategory = async (newCategoryName: string) => {
     if (newCategoryName.trim() === "") return;
     try {
@@ -42,7 +71,9 @@ export const CategoriesProvider: React.FC<{
         `/business/${businessId}/categories`,
         { name: newCategoryName }
       );
+      const newCategory = response.data;
       setCategories((prevCategories) => [...prevCategories, response.data]);
+      socket?.emit("ADD_CATEGORY", newCategory);
     } catch (error) {
       console.error("Error adding category: ", error);
     }
@@ -56,6 +87,13 @@ export const CategoriesProvider: React.FC<{
           action: "toggle-completed",
         }
       );
+      const updatedCategory = response.data;
+      console.log("updatedCategory: ", updatedCategory);
+
+      const categoryToEmit = { ...updatedCategory, id: categoryId };
+      console.log("categoryToEmit: ", categoryToEmit);
+
+      socket?.emit("UPDATE_CATEGORY", categoryToEmit);
       setCategories((prevCategories) =>
         prevCategories.map((category) =>
           category.id === categoryId
@@ -73,6 +111,7 @@ export const CategoriesProvider: React.FC<{
       await axiosPrivate.delete(
         `/business/${businessId}/categories/${categoryId}`
       );
+      socket?.emit("DELETE_CATEGORY", { id: categoryId });
       setCategories((prevCategories) =>
         prevCategories.filter((category) => category.id !== categoryId)
       );
@@ -90,6 +129,8 @@ export const CategoriesProvider: React.FC<{
           newName,
         }
       );
+      const updatedCategory = { id: categoryId, name: newName };
+      socket?.emit("UPDATE_CATEGORY", updatedCategory);
       setCategories((prevCategories) =>
         prevCategories.map((category) =>
           category.id === categoryId ? { ...category, name: newName } : category
