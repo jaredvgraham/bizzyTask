@@ -3,6 +3,7 @@ export interface Task {
   name: string;
   descriptions: { text: string; createdAt: Date; completed: boolean }[];
   completed: boolean;
+
   createdAt: Date;
 }
 
@@ -30,4 +31,10 @@ export interface Business {
   progress: number;
   teamMembers: string[];
   createdAt: Date;
+}
+
+export interface Description {
+  text: string;
+  createdAt: Date;
+  completed: boolean;
 }

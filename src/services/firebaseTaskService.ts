@@ -222,9 +222,7 @@ export const deleteDescription = async (
       const taskData = taskDoc.data();
       const updatedDescriptions = taskData?.descriptions.filter(
         (desc: { text: string; createdAt: string; completed: boolean }) =>
-          desc.text !== description.text &&
-          desc.createdAt !== description.createdAt &&
-          desc.completed !== description.completed
+          !(desc.text === description.text)
       );
 
       await taskRef.update({ descriptions: updatedDescriptions });

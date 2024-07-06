@@ -1,5 +1,4 @@
-import React from "react";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   FiChevronDown,
   FiChevronUp,
@@ -10,75 +9,31 @@ import {
 } from "react-icons/fi";
 import TaskItem from "./TaskItem";
 import handleEnterSubmit from "@/utils/handleEnterSubmit";
-
-interface Task {
-  id: string;
-  name: string;
-  descriptions: { text: string; createdAt: Date; completed: boolean }[];
-  completed: boolean;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  tasks: Task[];
-  completed: boolean;
-}
+import { useTasks } from "@/context/TasksContext";
+import { useCategories } from "@/context/CategoriesContext";
+import { Category } from "@/types";
 
 interface TaskCategoryProps {
   category: Category;
-  expandedCategory: string | null;
-  newDescriptions: { [taskId: string]: string };
-  hiddenTasks: Set<string>;
-  onToggleCategory: (categoryId: string) => void;
-  onDeleteTask: (categoryId: string, taskId: string) => void;
-  onDeleteDescription: (
-    taskId: string,
-    description: { text: string; createdAt: Date; completed: boolean }
-  ) => void;
-  onToggleTaskVisibility: (taskId: string) => void;
-  onAddDescription: (taskId: string, description: string) => void;
-  onDescriptionChange: (taskId: string, description: string) => void;
-  onAddTask: (task: { name: string; categoryId: string }) => void;
-  onTaskInputChange: (name: string, categoryId: string) => void;
-  onToggleTaskCompleted: (categoryId: string, taskId: string) => void;
-  onToggleCategoryCompleted: (categoryId: string) => void;
-  onDeleteCategory: (categoryId: string) => void; // Add this line
-  onEditDescription: (
-    taskId: string,
-    oldDescription: { text: string; createdAt: Date; completed: boolean },
-    newDescription: string
-  ) => void;
-  onToggleDescriptionCompleted: (
-    taskId: string,
-    description: { text: string; createdAt: Date; completed: boolean }
-  ) => void; // Add this line
-  onEditCategoryName: (categoryId: string, newName: string) => void;
-  newTask: { name: string; categoryId: string };
+  businessId: string;
 }
 
 const TaskCategory: React.FC<TaskCategoryProps> = ({
   category,
-  expandedCategory,
-  newDescriptions,
-  hiddenTasks,
-  onToggleCategory,
-  onDeleteTask,
-  onDeleteDescription,
-  onToggleTaskVisibility,
-  onAddDescription,
-  onDescriptionChange,
-  onAddTask,
-  onTaskInputChange,
-  onToggleTaskCompleted,
-  onToggleCategoryCompleted,
-  onDeleteCategory,
-  onToggleDescriptionCompleted,
-  onEditCategoryName,
-  onEditDescription,
-
-  newTask,
+  businessId,
 }) => {
+  const {
+    newTask,
+    newDescriptions,
+    hiddenTasks,
+    handleAddTask,
+    handleTaskInputChange,
+    toggleCategoryExpansion,
+    expandedCategory,
+  } = useTasks();
+  const { toggleCategoryCompleted, handleDeleteCategory, editCategoryName } =
+    useCategories();
+
   const isExpanded = expandedCategory === category.id;
   const [isEditing, setIsEditing] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState(category.name);
@@ -92,7 +47,7 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
 
   const handleEditCategoryName = () => {
     if (newCategoryName.trim() !== "") {
-      onEditCategoryName(category.id, newCategoryName);
+      editCategoryName(category.id, newCategoryName);
       setIsEditing(false);
     }
   };
@@ -104,9 +59,11 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
           ? "col-span-1 lg:col-span-2 xl:col-span-3"
           : "col-span-1 sm:col-span-2 lg:col-span-1"
       }`}
-      onClick={!isExpanded ? () => onToggleCategory(category.id) : undefined}
+      onClick={
+        !isExpanded ? () => toggleCategoryExpansion(category.id) : undefined
+      }
     >
-      <div className="flex justify-between items-center ">
+      <div className="flex justify-between items-center">
         <div className="flex items-center space-x-2">
           {isEditing ? (
             <input
@@ -124,9 +81,9 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
             />
           ) : (
             <h3
-              className={`${
+              className={`text-3xl font-light mb-2 ${
                 isExpanded && "text-4xl text-gray-600 underline-thin"
-              } text-3xl font-light mb-2  `}
+              }`}
             >
               {category.name}
             </h3>
@@ -134,7 +91,7 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
         </div>
         <div className="flex items-center space-x-10">
           <button
-            onClick={() => onToggleCategoryCompleted(category.id)}
+            onClick={() => toggleCategoryCompleted(category.id)}
             className={`ml-2 ${
               category.completed ? "text-green-500" : "text-gray-500"
             }`}
@@ -153,9 +110,9 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onToggleCategory(category.id);
+              toggleCategoryExpansion(category.id);
             }}
-            className="text-blue-500  "
+            className="text-blue-500"
           >
             {isExpanded ? (
               <FiChevronUp size={24} />
@@ -166,9 +123,9 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onDeleteCategory(category.id);
+              handleDeleteCategory(category.id);
             }}
-            className="text-gray-500 hover:text-red-500 "
+            className="text-gray-500 hover:text-red-500"
           >
             <FiTrash />
           </button>
@@ -183,34 +140,29 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
               categoryId={category.id}
               newDescription={newDescriptions[task.id] || ""}
               hidden={hiddenTasks.has(task.id)}
-              onDeleteTask={onDeleteTask}
-              onDeleteDescription={onDeleteDescription}
-              onToggleVisibility={onToggleTaskVisibility}
-              onAddDescription={onAddDescription}
-              onDescriptionChange={onDescriptionChange}
-              onToggleTaskCompleted={onToggleTaskCompleted}
-              onToggleDescriptionCompleted={onToggleDescriptionCompleted}
-              onEditDescription={onEditDescription}
+              businessId={businessId}
             />
           ))}
           <div className="mt-4" onClick={(e) => e.stopPropagation()}>
             <input
               type="text"
               value={newTask.name}
-              onChange={(e) => onTaskInputChange(e.target.value, category.id)}
+              onChange={(e) =>
+                handleTaskInputChange(e.target.value, category.id)
+              }
               placeholder="Task Name"
               className="mr-2 p-2 border rounded"
               onClick={(e) => e.stopPropagation()}
               onKeyDown={(e) =>
                 handleEnterSubmit(e, () =>
-                  onAddTask({ name: newTask.name, categoryId: category.id })
+                  handleAddTask({ name: newTask.name, categoryId: category.id })
                 )
               }
             />
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onAddTask({ name: newTask.name, categoryId: category.id });
+                handleAddTask({ name: newTask.name, categoryId: category.id });
               }}
               className="btn-yellow text-white p-2 rounded"
             >
