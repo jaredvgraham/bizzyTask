@@ -84,7 +84,7 @@ export const TasksProvider: React.FC<{
               if (category.id === data.categoryId) {
                 return {
                   ...category,
-                  tasks: [...category.tasks, data],
+                  tasks: [...category?.tasks, data],
                 };
               }
               return category;
@@ -108,7 +108,7 @@ export const TasksProvider: React.FC<{
               if (category.id === data.categoryId) {
                 return {
                   ...category,
-                  tasks: category.tasks.map((task) =>
+                  tasks: category?.tasks.map((task) =>
                     task.id === data.id ? data : task
                   ),
                 };
@@ -125,7 +125,7 @@ export const TasksProvider: React.FC<{
             if (category.id === data.categoryId) {
               return {
                 ...category,
-                tasks: category.tasks.filter((task) => task.id !== data.id),
+                tasks: category?.tasks.filter((task) => task.id !== data.id),
               };
             }
             return category;
@@ -164,7 +164,7 @@ export const TasksProvider: React.FC<{
           if (category.id === task.categoryId) {
             return {
               ...category,
-              tasks: [...category.tasks, newTask],
+              tasks: [...category?.tasks, newTask],
             };
           }
           return category;
@@ -201,7 +201,7 @@ export const TasksProvider: React.FC<{
 
         categoryId: expandedCategory,
 
-        descriptions: [...task.descriptions, newDescription], // Include the new description
+        descriptions: [...task?.descriptions, newDescription], // Include the new description
         // Set this based on your logic
       };
 
@@ -209,11 +209,11 @@ export const TasksProvider: React.FC<{
 
       socket?.emit("UPDATE_TASK", taskToEmit);
       setCategories((prevCategories) =>
-        prevCategories.map((category) => {
+        prevCategories?.map((category) => {
           if (category.id === expandedCategory) {
             return {
               ...category,
-              tasks: category.tasks.map((task) => {
+              tasks: category?.tasks?.map((task) => {
                 if (task.id === taskId) {
                   return {
                     ...task,
@@ -259,7 +259,7 @@ export const TasksProvider: React.FC<{
         ...task,
         categoryId: expandedCategory,
         taskId: taskId,
-        descriptions: task.descriptions.map((desc) =>
+        descriptions: task?.descriptions?.map((desc) =>
           desc.text === oldDescription.text
             ? { ...desc, text: newDescription }
             : desc
@@ -268,15 +268,15 @@ export const TasksProvider: React.FC<{
 
       socket?.emit("UPDATE_TASK", taskToEmit);
       setCategories((prevCategories) =>
-        prevCategories.map((category) => {
+        prevCategories?.map((category) => {
           if (category.id === expandedCategory) {
             return {
               ...category,
-              tasks: category.tasks.map((task) => {
+              tasks: category?.tasks?.map((task) => {
                 if (task.id === taskId) {
                   return {
                     ...task,
-                    descriptions: task.descriptions.map((desc) => {
+                    descriptions: task?.descriptions?.map((desc) => {
                       if (desc.text === oldDescription.text) {
                         return { ...desc, text: newDescription };
                       }
@@ -314,7 +314,7 @@ export const TasksProvider: React.FC<{
         ...task,
         categoryId: expandedCategory,
         taskId: taskId,
-        descriptions: task.descriptions.map((desc) =>
+        descriptions: task?.descriptions?.map((desc) =>
           desc.text === description.text
             ? { ...desc, completed: !desc.completed }
             : desc
@@ -323,15 +323,15 @@ export const TasksProvider: React.FC<{
 
       socket?.emit("UPDATE_TASK", taskToEmit);
       setCategories((prevCategories) =>
-        prevCategories.map((category) => {
+        prevCategories?.map((category) => {
           if (category.id === expandedCategory) {
             return {
               ...category,
-              tasks: category.tasks.map((task) => {
+              tasks: category?.tasks?.map((task) => {
                 if (task.id === taskId) {
                   return {
                     ...task,
-                    descriptions: task.descriptions.map((desc) => {
+                    descriptions: task?.descriptions?.map((desc) => {
                       if (desc.text === description.text) {
                         return { ...desc, completed: !desc.completed };
                       }
@@ -358,11 +358,11 @@ export const TasksProvider: React.FC<{
       );
       socket?.emit("DELETE_TASK", { id: taskId, categoryId });
       setCategories((prevCategories) =>
-        prevCategories.map((category) => {
+        prevCategories?.map((category) => {
           if (category.id === categoryId) {
             return {
               ...category,
-              tasks: category.tasks.filter((task) => task.id !== taskId),
+              tasks: category?.tasks?.filter((task) => task.id !== taskId),
             };
           }
           return category;
@@ -388,17 +388,17 @@ export const TasksProvider: React.FC<{
         ...task,
         categoryId: expandedCategory,
         taskId: taskId,
-        descriptions: task.descriptions.filter(
+        descriptions: task?.descriptions.filter(
           (desc) => desc.text !== description.text
         ),
       };
       socket?.emit("UPDATE_TASK", taskToEmit);
       setCategories((prevCategories) =>
-        prevCategories.map((category) => {
+        prevCategories?.map((category) => {
           if (category.id === expandedCategory) {
             return {
               ...category,
-              tasks: category.tasks.map((task) => {
+              tasks: category?.tasks?.map((task) => {
                 if (task.id === taskId) {
                   return {
                     ...task,
@@ -471,11 +471,11 @@ export const TasksProvider: React.FC<{
       );
       socket?.emit("UPDATE_TASK", taskToEmit);
       setCategories((prevCategories) =>
-        prevCategories.map((category) => {
+        prevCategories?.map((category) => {
           if (category.id === categoryId) {
             return {
               ...category,
-              tasks: category.tasks.map((task) => {
+              tasks: category?.tasks?.map((task) => {
                 if (task.id === taskId) {
                   return { ...task, completed: response.data.completed };
                 }

@@ -7,9 +7,13 @@ interface CategoriesContextType {
   categories: Category[];
   setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
   addCategory: (newCategoryName: string) => void;
-  toggleCategoryCompleted: (categoryId: string) => void;
+  toggleCategoryCompleted: (categoryId: string, category: Category) => void;
   handleDeleteCategory: (categoryId: string) => void;
-  editCategoryName: (categoryId: string, newName: string) => void;
+  editCategoryName: (
+    categoryId: string,
+    newName: string,
+    category: Category
+  ) => void;
 }
 
 const CategoriesContext = createContext<CategoriesContextType | undefined>(
@@ -79,7 +83,10 @@ export const CategoriesProvider: React.FC<{
     }
   };
 
-  const toggleCategoryCompleted = async (categoryId: string) => {
+  const toggleCategoryCompleted = async (
+    categoryId: string,
+    category: Category
+  ) => {
     try {
       const response = await axiosPrivate.patch(
         `/business/${businessId}/categories/${categoryId}`,
@@ -90,7 +97,10 @@ export const CategoriesProvider: React.FC<{
       const updatedCategory = response.data;
       console.log("updatedCategory: ", updatedCategory);
 
-      const categoryToEmit = { ...updatedCategory, id: categoryId };
+      const categoryToEmit = {
+        ...category,
+        completed: updatedCategory.completed,
+      };
       console.log("categoryToEmit: ", categoryToEmit);
 
       socket?.emit("UPDATE_CATEGORY", categoryToEmit);
@@ -120,7 +130,11 @@ export const CategoriesProvider: React.FC<{
     }
   };
 
-  const editCategoryName = async (categoryId: string, newName: string) => {
+  const editCategoryName = async (
+    categoryId: string,
+    newName: string,
+    category: Category
+  ) => {
     try {
       await axiosPrivate.patch(
         `/business/${businessId}/categories/${categoryId}`,
@@ -129,7 +143,9 @@ export const CategoriesProvider: React.FC<{
           newName,
         }
       );
-      const updatedCategory = { id: categoryId, name: newName };
+      const updatedCategory = { ...category, name: newName };
+      console.log("updatedCategory: ", updatedCategory);
+
       socket?.emit("UPDATE_CATEGORY", updatedCategory);
       setCategories((prevCategories) =>
         prevCategories.map((category) =>
