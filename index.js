@@ -114,9 +114,11 @@ const generateTemplate = async (businessType, description) => {
     const responseText = response.choices[0].message.content?.trim();
     console.log(response.usage?.total_tokens, "tokens used");
 
+    console.log("Response text: ", responseText);
     const jsonResponseMatch = responseText?.match(/\{[\s\S]*\}/);
     if (jsonResponseMatch) {
       const jsonResponse = jsonResponseMatch[0];
+      console.log("JSON response: ", jsonResponse);
       return JSON.parse(jsonResponse);
     } else {
       throw new Error("No JSON response found");
