@@ -1,4 +1,4 @@
-const Milestones = ({ businessId }) => {
+const Milestones = () => {
   return (
     <div className="border p-4 rounded-lg shadow mt-4">
       <h2 className="text-xl font-bold mb-2">Milestones</h2>
