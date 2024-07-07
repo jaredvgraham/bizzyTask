@@ -65,7 +65,7 @@ const Sidebar = () => {
     ? "bg-gradient-to-b from-slate-50 to-slate-100 fade-in"
     : "bg-slate-50";
 
-  const headingText = isInBusiness ? "Business Plan Assistant" : "BizFast";
+  const headingText = isInBusiness ? "Business Plan Assistant" : "BizzyTask";
 
   const headingColor = "text-teal-600";
 

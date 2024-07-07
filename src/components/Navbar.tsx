@@ -43,7 +43,9 @@ const Navbar = () => {
           />
         </div>
         <span className="text-xl font-normal ml-10  text-gray-800">
-          {isDashboard ? "BizFast" : businessName || "Business Plan Assistant"}
+          {isDashboard
+            ? "BizzyTask"
+            : businessName || "Business Plan Assistant"}
         </span>
         <ul className="flex space-x-4 text-gray-800">
           <li>
