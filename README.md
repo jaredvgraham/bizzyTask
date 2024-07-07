@@ -5,7 +5,7 @@ BizzyTask is a platform designed to help you manage and organize your business t
 ## Features
 - Real-time WebSocket communication
 - Integration with Firebase for data storage
-- Template generation using OpenAI's GPT-4 model
+- Template generation using OpenAI's GPT-4o model
 - User authentication and business management
 
   
