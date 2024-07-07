@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+.underline-thin {
+  text-decoration: underline;
+  text-decoration-thickness: 1px; /* Adjust the thickness as needed */
+  text-underline-offset: 2px; /* Adjust the offset as needed */
+}
+
+/* global.css or any other CSS file included in your project */
+.thin-line-through {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  text-decoration-color: #77797c; /* Tailwind's gray-300 color */
+}
+
+.btn-yellow {
+  background-color: #fbbf24; /* Tailwind's yellow-400 color */
+}
+
+/* styles.css or global.css */
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 500px;
+  height: 500px;
+  margin-top: -250px; /* Half of the loader height */
+  margin-left: -250px; /* Half of the loader width */
+  border: solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 4px dashed #8a44e4;
+  animation: spin 2s linear infinite;
+  z-index: 1; /* Ensure it's above the background but below the text */
+}
+.loader:before,
+.loader:after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  border: 4px solid transparent;
+}
+
+.loader:before {
+  border-top: 4px solid #3498db;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  animation: growShrink 2s linear infinite;
+}
+
+.loader:after {
+  border-right: 4px dashed #6fb9e9;
+  width: 50%;
+  height: 50%;
+  top: 25%;
+  left: 25%;
+  animation: growShrink 2s linear infinite reverse;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes growShrink {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+}
+
+.relative {
+  position: relative;
+}
