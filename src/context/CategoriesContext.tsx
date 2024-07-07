@@ -29,11 +29,14 @@ export const CategoriesProvider: React.FC<{
 
   useEffect(() => {
     const fetchCategoriesAndTasks = async () => {
+      console.log("fetching categories");
+
       try {
         const response = await axiosPrivate.get(
           `/business/${businessId}/categories`
         );
         setCategories(response.data);
+        console.log("categories: ", response);
       } catch (error) {
         console.log("Error fetching categories: ", error);
       }

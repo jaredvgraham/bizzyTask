@@ -6,6 +6,10 @@ const axiosPublic = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
 });
 
+const axiosServer = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_BASE_URL,
+});
+
 const axiosPrivate = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
 });
@@ -48,4 +52,4 @@ axiosPrivate.interceptors.response.use(
   }
 );
 
-export { axiosPublic, axiosPrivate };
+export { axiosPublic, axiosPrivate, axiosServer };

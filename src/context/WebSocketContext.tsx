@@ -2,6 +2,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
+
 interface WebSocketContextType {
   socket: Socket | null;
 }
@@ -16,9 +18,12 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const socketIo = io("http://localhost:3002");
+    const socketIo = io(baseUrl ? baseUrl : "http://localhost:5000", {
+      transports: ["websocket"],
+    });
 
     setSocket(socketIo);
+    console.log(baseUrl);
 
     socketIo.on("connect", () => {
       console.log("Connected to WebSocket server");
