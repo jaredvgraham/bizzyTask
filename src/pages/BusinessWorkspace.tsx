@@ -3,25 +3,21 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { db } from "@/lib/firebase";
+
 import { doc, getDoc } from "firebase/firestore";
 import Sidebar from "@/components/Sidebar";
 import ProjectSummary from "@/components/ProjectSummary";
+import { axiosPrivate } from "@/axios/axios";
 
 const BusinessWorkspace = ({ params }: { params: { id: string } }) => {
-  const { id } = params;
+  const { id } = params || {};
   const { user } = useAuth();
   const [business, setBusiness] = useState<any>(null);
 
   useEffect(() => {
     const fetchBusiness = async () => {
-      if (id && user) {
-        const docRef = doc(db, "businesses", id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setBusiness({ id: docSnap.id, ...docSnap.data() }); // Ensure id is included
-        }
-      }
+      const res = await axiosPrivate.get(`/business/${id}`);
+      setBusiness(res.data);
     };
 
     fetchBusiness();

@@ -31,7 +31,9 @@ const SignIn = () => {
         const { token } = res.data;
 
         // Authenticate with Firebase using custom token
-        await signInWithCustomToken(auth, token);
+        if (auth && token) {
+          await signInWithCustomToken(auth, token);
+        }
 
         // Redirect to dashboard or other page after successful sign-in
         router.push("/dashboard");

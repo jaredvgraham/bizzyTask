@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { db } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+
+import { axiosPrivate } from "@/axios/axios";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -18,10 +18,9 @@ const Navbar = () => {
         const pathParts = pathname.split("/");
         if (pathParts.length >= 3 && pathParts[1] === "business") {
           const businessId = pathParts[2];
-          const businessDoc = await getDoc(doc(db, "businesses", businessId));
-          if (businessDoc.exists()) {
-            const businessData = businessDoc.data();
-            setBusinessName(businessData.name);
+          const businessDoc = await axiosPrivate.get(`/business/${businessId}`);
+          if (businessDoc) {
+            setBusinessName(businessDoc.data.name);
           }
         }
       }
