@@ -215,7 +215,7 @@ const Dashboard = () => {
           {businesses.map((business) => (
             <div
               key={business.id}
-              className="border p-4 rounded-lg shadow relative"
+              className="border p-4 rounded-lg shadow relative flex flex-col justify-between"
             >
               <button
                 onClick={() => handleDelete(business.id)}
@@ -230,7 +230,7 @@ const Dashboard = () => {
               </div>
               <button
                 onClick={() => router.push(`/business/${business.id}/overview`)}
-                className="mt-4 w-full bg-gray-800 text-white py-2 px-4 rounded hover:bg-gradient-to-r hover:from-gray-900  hover:to-teal-700"
+                className="mt-4 w-full bg-gray-800 text-white py-2 px-4 rounded hover:bg-gradient-to-r hover:from-gray-900  hover:to-teal-700 "
               >
                 View Business
               </button>

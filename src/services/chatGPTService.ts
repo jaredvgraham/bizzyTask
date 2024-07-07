@@ -10,28 +10,36 @@ export const generateTemplate = async (
 
   const prompt = `
     I need a template for a new business. The business type is "${businessType}", and here is a brief description: "${description}". 
-    Please provide a structured JSON response with categories and tasks. Each task should have a name and description. 
-    Example:
-    {
-      "categories": [
-        {
-          "name": "Frontend",
-          "tasks": [
-            {
-              "name": "example task",
-              "description": "some description"
-            },
-            {
-              "name": "another task",
-              "description": "some description"
-            }
-          ]
-        },
-        {
-          "name": "Backend"
-        }
-      ]
-    }
+    Please provide a structured JSON response with categories and tasks. 12-18 categories, and each task should have a name and 3 descriptions. The first description should be a general description for the tasks and the rest sub-tasks. 
+    Example if this was a web-app:
+     {
+    "categories": [
+      {
+        "name": "Frontend",
+        "tasks": [
+          {
+            "name": "example task",
+            "descriptions": [
+              "general description",
+              "sub-task 1 description",
+              "sub-task 2 description"
+            ]
+          },
+          {
+            "name": "another task",
+            "descriptions": [
+              "general description",
+              "sub-task 1 description",
+              "sub-task 2 description"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Backend"
+      }
+    ]
+  }
   `;
 
   try {
@@ -40,7 +48,7 @@ export const generateTemplate = async (
       messages: [
         {
           role: "system",
-          content: `You are a professional business consultant who is creating a business plan for a new business. The business type is "${businessType}", and the description is "${description}".`,
+          content: `You are a professional business consultant who is creating a business plan for a new business. The business type is "${businessType}", and the description is "${description}. Do not leave out anything that could be valuable for this business".`,
         },
         {
           role: "user",
@@ -48,21 +56,14 @@ export const generateTemplate = async (
         },
       ],
     });
-    // console.log(response.choices[0].message.content);
-
-    // console.log("token count: ", response.usage?.total_tokens);
-
-    // const template = response.choices[0].message.content?.trim();
-    // return template;
 
     const responseText = response.choices[0].message.content?.trim();
-    console.log("Response from ChatGPT:", responseText);
+    console.log(response.usage?.total_tokens, "tokens used");
 
-    // Use a regular expression to extract the JSON part of the response
     const jsonResponseMatch = responseText?.match(/\{[\s\S]*\}/);
     if (jsonResponseMatch) {
       const jsonResponse = jsonResponseMatch[0];
-      return JSON.parse(jsonResponse); // Parse the JSON directly here
+      return JSON.parse(jsonResponse);
     } else {
       throw new Error("No JSON response found");
     }

@@ -67,10 +67,10 @@ const TaskCategoryHeader: React.FC<TaskHeaderProps> = ({
           </h3>
         )}
       </div>
-      <div className="flex items-center space-x-10">
+      <div className="flex self-start items-center space-x-8 mt-2">
         <button
           onClick={() => toggleCategoryCompleted(category.id, category)}
-          className={`ml-2 hover:text-green-500 ${
+          className={` hover:text-green-500 ${
             category.completed ? "text-green-500" : "text-gray-500"
           }`}
         >

@@ -7,7 +7,7 @@ const ProjectSummary = ({ business }: { business: Business }) => {
   }
   return (
     <div
-      className="border p-4 rounded-lg shadow cursor-pointer transform transition-transform duration-200 hover:scale-105"
+      className="border p-4 rounded-lg shadow cursor-pointer hover:bg-slate-100 transition-colors duration-200 ease-in-out"
       onClick={sendToTaskBoard}
     >
       <h2 className="text-xl font-bold mb-2">Project Summary</h2>

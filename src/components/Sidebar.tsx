@@ -1,7 +1,10 @@
 "use client";
 
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
 import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
+import router from "next/router";
 import {
   FiGrid,
   FiSettings,
@@ -15,6 +18,15 @@ import {
 const Sidebar = () => {
   const pathname = usePathname();
   const { id } = useParams() ?? {};
+
+  const handleLogOut = async () => {
+    try {
+      await signOut(auth);
+      router.push("/signin");
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
 
   const getDynamicLinks = () => {
     if (pathname?.startsWith(`/business/${id}`)) {
@@ -74,7 +86,7 @@ const Sidebar = () => {
                 <Link
                   href={link.href}
                   className={`flex items-center p-3 rounded-lg text-gray-800 hover:bg-teal-500 hover:text-white transition duration-300 ${
-                    pathname === link.href ? "bg-teal-500 text-white" : ""
+                    pathname === link.href ? "bg-black text-white" : ""
                   }`}
                 >
                   {link.icon}
@@ -85,31 +97,12 @@ const Sidebar = () => {
           </ul>
           <ul className="space-y-2">
             <li>
-              <Link
-                href="/settings"
-                className="flex items-center p-3 rounded-lg text-gray-800 hover:bg-teal-500 hover:text-white transition duration-300"
-              >
-                <FiSettings />
-                <span className="ml-3">Settings</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/profile"
-                className="flex items-center p-3 rounded-lg text-gray-800 hover:bg-teal-500 hover:text-white transition duration-300"
-              >
-                <FiUser />
-                <span className="ml-3">Profile</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/logout"
-                className="flex items-center p-3 rounded-lg text-gray-800 hover:bg-teal-500 hover:text-white transition duration-300"
-              >
+              <div className="flex items-center p-3 rounded-lg text-gray-800  hover:text-red-500 transition duration-300 cursor-pointer">
                 <FiLogOut />
-                <span className="ml-3">Logout</span>
-              </Link>
+                <span className="ml-3" onClick={handleLogOut}>
+                  Logout
+                </span>
+              </div>
             </li>
           </ul>
         </nav>

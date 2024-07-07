@@ -3,6 +3,7 @@ import TaskCategoryHeader from "./TaskCategoryHeader";
 import TaskList from "./TaskList";
 import { Category } from "@/types";
 import { useTasks } from "@/context/TasksContext";
+import { useRef, useEffect } from "react";
 
 interface TaskCategoryProps {
   category: Category;
@@ -15,9 +16,25 @@ const TaskCategory: React.FC<TaskCategoryProps> = ({
 }) => {
   const { expandedCategory, toggleCategoryExpansion } = useTasks();
   const isExpanded = expandedCategory === category.id;
+  const categoryRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isExpanded && categoryRef.current) {
+      const offset = -55; // Adjust this value to leave space above the category
+      const elementPosition =
+        categoryRef.current.getBoundingClientRect().top + window.scrollY;
+      const offsetPosition = elementPosition + offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  }, [isExpanded]);
 
   return (
     <div
+      ref={categoryRef}
       className={`border p-4 rounded-lg shadow cursor-pointer ${
         isExpanded
           ? "col-span-1 lg:col-span-2 xl:col-span-3"

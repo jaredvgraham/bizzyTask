@@ -50,7 +50,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         <div className="flex flex-col border-l-2 pl-2">
           <h3
             className={`font-normal text-3xl mb-4 ${
-              isExpanded && "text-gray-700"
+              isExpanded && "text-teal-800"
             }`}
           >
             {task.name}
@@ -178,12 +178,12 @@ const TaskItem: React.FC<TaskItemProps> = ({
       </div>
       {!hidden && (
         <>
-          <div className="flex items-end space-x-2 border-b-2">
+          <div className="flex items-end space-x-2 border-b-2 ">
             <textarea
               value={newDescription}
               onChange={(e) => handleDescriptionChange(task.id, e.target.value)}
-              placeholder="Add Description"
-              className="mr-2 p-2 border rounded resize-none overflow-hidden flex-grow mb-3"
+              placeholder="Add Description . . ."
+              className="mr-2 p-2 border-2 border-indigo-200 rounded resize-none overflow-hidden flex-grow mb-3 bg-rose-100 bg-opacity-5"
               rows={1}
               onClick={(e) => e.stopPropagation()}
               onKeyDown={(e) =>

@@ -53,6 +53,12 @@ export const createBusiness = async (
 
         if (category.tasks) {
           for (const task of category.tasks) {
+            const descriptions = task.descriptions.map((desc: string) => ({
+              text: desc,
+              createdAt: new Date(),
+              completed: false,
+            }));
+
             await db
               .collection("businesses")
               .doc(businessRef.id)
@@ -61,13 +67,7 @@ export const createBusiness = async (
               .collection("tasks")
               .add({
                 name: task.name,
-                descriptions: [
-                  {
-                    text: task.description,
-                    createdAt: new Date(),
-                    completed: false,
-                  },
-                ],
+                descriptions: descriptions,
                 completed: false,
                 createdAt: admin.firestore.FieldValue.serverTimestamp(),
               });

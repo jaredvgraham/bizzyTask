@@ -39,20 +39,15 @@ const Navbar = () => {
             alt="Business Plan Assistant"
             width={40}
             height={40}
+            onClick={() => window.location.replace("/dashboard")}
           />
         </div>
-        <span className="text-xl font-normal ml-20 pl-15 text-gray-800">
+        <span className="text-xl font-normal ml-10  text-gray-800">
           {isDashboard ? "BizFast" : businessName || "Business Plan Assistant"}
         </span>
         <ul className="flex space-x-4 text-gray-800">
           <li>
             <Link href="/dashboard">Dashboard</Link>
-          </li>
-          <li>
-            <Link href="/settings">Settings</Link>
-          </li>
-          <li>
-            <Link href="/profile">Profile</Link>
           </li>
         </ul>
       </div>
