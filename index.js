@@ -13,7 +13,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "*", // Replace with your frontend URL
+    origin: "https://bizzytask.onrender.com",
     methods: ["GET", "POST"],
   },
 });
