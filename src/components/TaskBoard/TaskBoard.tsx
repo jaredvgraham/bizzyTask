@@ -3,6 +3,7 @@ import TaskCategory from "./TaskCategory";
 import AddCategoryForm from "./AddCategoryForm";
 import { useCategories } from "@/context/CategoriesContext";
 import { Category } from "@/types";
+import Loading from "../Loading";
 
 interface TaskBoardProps {
   expanded: boolean;
@@ -10,7 +11,7 @@ interface TaskBoardProps {
 }
 
 const TaskBoard = ({ expanded, businessId }: TaskBoardProps) => {
-  const { categories, addCategory } = useCategories();
+  const { categories, addCategory, loading } = useCategories();
   const [newCategoryName, setNewCategoryName] = useState("");
 
   const handleAddCategory = () => {
@@ -22,6 +23,10 @@ const TaskBoard = ({ expanded, businessId }: TaskBoardProps) => {
     addCategory(newCategoryName);
     setNewCategoryName("");
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div

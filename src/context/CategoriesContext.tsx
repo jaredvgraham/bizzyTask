@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { axiosPrivate } from "@/axios/axios";
 import { Category } from "@/types";
 import { useWebSocket } from "./WebSocketContext";
+import { set } from "nprogress";
 
 interface CategoriesContextType {
   categories: Category[];
@@ -14,6 +15,7 @@ interface CategoriesContextType {
     newName: string,
     category: Category
   ) => void;
+  loading: boolean;
 }
 
 const CategoriesContext = createContext<CategoriesContextType | undefined>(
@@ -25,11 +27,13 @@ export const CategoriesProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ businessId, children }) => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const { socket } = useWebSocket();
 
   useEffect(() => {
     const fetchCategoriesAndTasks = async () => {
       console.log("fetching categories");
+      setLoading(true);
 
       try {
         const response = await axiosPrivate.get(
@@ -37,6 +41,7 @@ export const CategoriesProvider: React.FC<{
         );
         setCategories(response.data);
         console.log("categories: ", response);
+        setLoading(false);
       } catch (error) {
         console.log("Error fetching categories: ", error);
       }
@@ -169,6 +174,7 @@ export const CategoriesProvider: React.FC<{
         toggleCategoryCompleted,
         handleDeleteCategory,
         editCategoryName,
+        loading,
       }}
     >
       {children}
