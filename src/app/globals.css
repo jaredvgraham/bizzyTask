@@ -124,3 +124,14 @@ body {
 .relative {
   position: relative;
 }
+
+@media screen and (max-width: 768px) {
+  .description {
+    width: 200px;
+  }
+  .phone {
+    /* display: flex;
+    justify-content: space-evenly; */
+    overflow: hidden;
+  }
+}

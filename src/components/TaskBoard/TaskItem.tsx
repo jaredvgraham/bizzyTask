@@ -46,7 +46,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
   return (
     <div className="mb-4 border-b" onClick={(e) => e.stopPropagation()}>
-      <div className="flex justify-between items-start p-2">
+      <div className="flex justify-between items-start p-2 phone">
         <div className="flex flex-col border-l-2 pl-2">
           <h3
             className={`font-normal text-3xl mb-4 ${
@@ -56,12 +56,12 @@ const TaskItem: React.FC<TaskItemProps> = ({
             {task.name}
           </h3>
           {!hidden && (
-            <ul className="pl-2 text-black">
+            <ul className="pl-2 text-black ">
               {task.descriptions &&
                 task.descriptions.map((description, index) => (
                   <li
                     key={index}
-                    className="flex justify-between items-center border-b pb-2 mb-2"
+                    className="flex justify-between  items-center border-b pb-2 mb-2 "
                   >
                     {editingDescription === description.text ? (
                       <input
@@ -89,11 +89,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
                             setEditingDescription(null);
                           }
                         }}
-                        className="border rounded p-2 flex-grow"
+                        className="border rounded p-2 flex-grow "
                       />
                     ) : (
                       <span
-                        className={`text-lg ${
+                        className={`text-lg description    ${
                           description.completed ? "line-through" : ""
                         }`}
                       >
