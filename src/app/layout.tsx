@@ -4,6 +4,7 @@ import { AuthProvider } from "../context/AuthContext";
 
 import ClientWrapper from "@/components/ClientWrapper";
 import { WebSocketProvider } from "@/context/WebSocketContext";
+import { LoadingProvider } from "@/context/LoadingContext";
 
 export const metadata = {
   title: "Business Plan Assistant",
@@ -16,7 +17,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <AuthProvider>
           <WebSocketProvider>
-            <ClientWrapper>{children}</ClientWrapper>
+            <LoadingProvider>
+              <ClientWrapper>{children}</ClientWrapper>
+            </LoadingProvider>
           </WebSocketProvider>
         </AuthProvider>
       </body>

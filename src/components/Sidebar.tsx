@@ -5,19 +5,38 @@ import { signOut } from "firebase/auth";
 import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
 import router from "next/router";
+import { useEffect, useState } from "react";
 import {
   FiGrid,
-  FiSettings,
-  FiUser,
   FiLogOut,
   FiBook,
   FiUsers,
   FiTarget,
+  FiMenu,
+  FiX,
 } from "react-icons/fi";
 
 const Sidebar = () => {
   const pathname = usePathname();
   const { id } = useParams() ?? {};
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 950) {
+        setIsMobile(true);
+        setIsOpen(false);
+      } else {
+        setIsMobile(false);
+        setIsOpen(true); // Keep sidebar open on larger screens
+      }
+    };
+
+    handleResize(); // Set the initial state
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleLogOut = async () => {
     try {
@@ -73,40 +92,63 @@ const Sidebar = () => {
 
   return (
     <div className="relative">
-      <div
-        className={`w-64 ${sidebarColorClass} text-black flex flex-col border-r border-slate-300 h-screen transition-all duration-500 sticky top-0 shadow-lg`}
-      >
-        <div className="p-6">
-          <h2 className={`${headingColor} ${headingStyle}`}>{headingText}</h2>
-        </div>
-        <nav className="flex-1 p-6 flex flex-col justify-between">
-          <ul className="space-y-2">
-            {dynamicLinks.map((link) => (
-              <li key={link.href} className="mb-1">
-                <Link
-                  href={link.href}
-                  className={`flex items-center p-3 rounded-lg text-gray-800 hover:bg-teal-500 hover:text-white transition duration-300 ${
-                    pathname === link.href ? "bg-black text-white" : ""
-                  }`}
+      {isMobile && (
+        <button
+          className="fixed top-4 left-4 z-50 text-3xl"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? <FiX /> : <FiMenu />}
+        </button>
+      )}
+      {(isOpen || !isMobile) && (
+        <div
+          className={`w-64 ${sidebarColorClass} text-black flex flex-col border-r border-slate-300 h-screen transition-all duration-500 ${
+            !isMobile && "sticky top-0"
+          }   shadow-lg ${
+            isMobile && !isOpen ? "-translate-x-full" : "translate-x-0"
+          } ${sidebarColorClass} text-black flex flex-col border-r border-slate-300 h-screen shadow-lg z-50`}
+        >
+          {isMobile && (
+            <button
+              className="fixed top-4 left-4 z-50 text-3xl"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <FiX />
+            </button>
+          )}
+          <div className="p-6">
+            <h2 className={`${headingColor} ${headingStyle}`}>{headingText}</h2>
+          </div>
+          <nav className="flex-1 p-6 flex flex-col justify-between">
+            <ul className="space-y-2">
+              {dynamicLinks.map((link) => (
+                <li key={link.href} className="mb-1">
+                  <Link
+                    href={link.href}
+                    className={`flex items-center p-3 rounded-lg text-gray-800 hover:bg-teal-500 hover:text-white transition duration-300 ${
+                      pathname === link.href ? "bg-black text-white" : ""
+                    }`}
+                  >
+                    {link.icon}
+                    <span className="ml-3">{link.label}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <ul className="space-y-2">
+              <li>
+                <div
+                  className="flex items-center p-3 rounded-lg text-gray-800 hover:text-red-500 transition duration-300 cursor-pointer"
+                  onClick={handleLogOut}
                 >
-                  {link.icon}
-                  <span className="ml-3">{link.label}</span>
-                </Link>
+                  <FiLogOut />
+                  <span className="ml-3">Logout</span>
+                </div>
               </li>
-            ))}
-          </ul>
-          <ul className="space-y-2">
-            <li>
-              <div className="flex items-center p-3 rounded-lg text-gray-800  hover:text-red-500 transition duration-300 cursor-pointer">
-                <FiLogOut />
-                <span className="ml-3" onClick={handleLogOut}>
-                  Logout
-                </span>
-              </div>
-            </li>
-          </ul>
-        </nav>
-      </div>
+            </ul>
+          </nav>
+        </div>
+      )}
     </div>
   );
 };

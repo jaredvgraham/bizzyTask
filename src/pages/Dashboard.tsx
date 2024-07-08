@@ -142,6 +142,9 @@ import axios from "axios";
 import { FiTrash2 } from "react-icons/fi";
 import { log } from "console";
 import { axiosPrivate } from "@/axios/axios";
+import Loading from "@/components/Loading";
+import { useLoading } from "@/context/LoadingContext";
+import { set } from "nprogress";
 
 interface Business {
   id: string;
@@ -154,16 +157,19 @@ interface Business {
 const Dashboard = () => {
   const router = useRouter();
   const { user, loading } = useAuth();
+  const { setIsLoading } = useLoading();
   const [businesses, setBusinesses] = useState<Business[]>([]);
 
   useEffect(() => {
     const fetchBusinesses = async () => {
+      setIsLoading(true);
       if (user) {
         try {
           const response = await axiosPrivate.get("/business", {
             params: { userEmail: user.email },
           });
           setBusinesses(response.data);
+          setIsLoading(false);
         } catch (error) {
           console.error("Error fetching businesses:", error);
         }
@@ -211,7 +217,7 @@ const Dashboard = () => {
             Logout
           </button>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {businesses.map((business) => (
             <div
               key={business.id}
