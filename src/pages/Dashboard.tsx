@@ -157,19 +157,17 @@ interface Business {
 const Dashboard = () => {
   const router = useRouter();
   const { user, loading } = useAuth();
-  const { setIsLoading } = useLoading();
+
   const [businesses, setBusinesses] = useState<Business[]>([]);
 
   useEffect(() => {
     const fetchBusinesses = async () => {
-      setIsLoading(true);
       if (user) {
         try {
           const response = await axiosPrivate.get("/business", {
             params: { userEmail: user.email },
           });
           setBusinesses(response.data);
-          setIsLoading(false);
         } catch (error) {
           console.error("Error fetching businesses:", error);
         }
