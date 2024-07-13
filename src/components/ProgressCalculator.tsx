@@ -4,14 +4,18 @@ import { axiosPrivate } from "@/axios/axios";
 
 const ProgressCalculator = ({ businessId }: { businessId: string }) => {
   const [progress, setProgress] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProgress = async () => {
+      setLoading(true);
       try {
         const res = await axiosPrivate.get(`/business/${businessId}/progress`);
         setProgress(res.data.progress);
+        setLoading(false);
       } catch (error) {
         console.log("Error fetching progress: ", error);
+        setLoading(false);
       }
     };
     fetchProgress();
@@ -22,6 +26,10 @@ const ProgressCalculator = ({ businessId }: { businessId: string }) => {
     if (progress < 70) return "bg-yellow-500 text-yellow-500";
     return "bg-green-500 text-green-500";
   };
+
+  if (loading) {
+    return <div className="text-purple-400">Loading Progress...</div>;
+  }
 
   return (
     <div>

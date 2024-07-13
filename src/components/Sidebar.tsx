@@ -102,8 +102,7 @@ const Sidebar = () => {
       )}
       {(isOpen || !isMobile) && (
         <div
-          className={`w-64 ${sidebarColorClass} text-black flex flex-col border-r border-slate-300 h-screen transition-all duration-500 ${
-            !isMobile && "sticky top-0"
+          className={`w-64 ${sidebarColorClass} text-black flex flex-col border-r border-slate-300 h-screen transition-all duration-500 sticky top-0 $
           }   shadow-lg ${
             isMobile && !isOpen ? "-translate-x-full" : "translate-x-0"
           } ${sidebarColorClass} text-black flex flex-col border-r border-slate-300 h-screen shadow-lg z-50`}
