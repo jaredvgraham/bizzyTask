@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TaskCategory from "./TaskCategory";
 import AddCategoryForm from "./AddCategoryForm";
 import { useCategories } from "@/context/CategoriesContext";
@@ -13,6 +13,7 @@ interface TaskBoardProps {
 const TaskBoard = ({ expanded, businessId }: TaskBoardProps) => {
   const { categories, addCategory, loading } = useCategories();
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [sortOrder, setSortOrder] = useState("oldestCreated");
 
   const handleAddCategory = () => {
     if (newCategoryName.trim() === "") {
@@ -23,6 +24,20 @@ const TaskBoard = ({ expanded, businessId }: TaskBoardProps) => {
     addCategory(newCategoryName);
     setNewCategoryName("");
   };
+
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortOrder(e.target.value);
+  };
+
+  const sortedCategories = [...categories].sort((a, b) => {
+    const dateA = new Date(a.createdAt);
+    const dateB = new Date(b.createdAt);
+
+    if (sortOrder === "recentlyCreated") {
+      return dateB.getTime() - dateA.getTime();
+    }
+    return dateA.getTime() - dateB.getTime();
+  });
 
   if (loading) {
     return <Loading />;
@@ -40,8 +55,22 @@ const TaskBoard = ({ expanded, businessId }: TaskBoardProps) => {
         onCategoryNameChange={setNewCategoryName}
         onAddCategory={handleAddCategory}
       />
-      <div className="grid grid-cols-1  lg:grid-cols-2 2xl:grid-cols-3 gap-4">
-        {categories?.map((category: Category) => (
+      <div className="mb-4">
+        <label htmlFor="sortOrder" className="mr-2">
+          Sort by:
+        </label>
+        <select
+          id="sortOrder"
+          value={sortOrder}
+          onChange={handleSortChange}
+          className="p-2 border rounded"
+        >
+          <option value="recentlyCreated">Recently Created</option>
+          <option value="oldestCreated">Oldest Created</option>
+        </select>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
+        {sortedCategories.map((category: Category) => (
           <TaskCategory
             key={category.id}
             category={category}
