@@ -7,6 +7,9 @@ import {
 import { error } from "console";
 import { generateTemplate } from "@/services/chatGPTService";
 
+export const maxDuration = 300; // 300 seconds or 5 minutes
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
