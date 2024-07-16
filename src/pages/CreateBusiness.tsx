@@ -19,15 +19,16 @@ const CreateBusiness = () => {
     try {
       const businessType = type === "other" ? customType : type;
       // Generate a custom template using ChatGPT API
-      const templateResponse = await axiosServer.post("/api/chatgpt", {
-        type: businessType,
-        description,
-      });
 
-      const template2 = templateResponse.data.template;
-      const template = templateResponse.data;
-      console.log("template from data", template);
-      console.log(template2);
+      // const templateResponse = await axiosServer.post("/api/chatgpt", {
+      //   type: businessType,
+      //   description,
+      // });
+
+      // const template2 = templateResponse.data.template;
+      // const template = templateResponse.data;
+      // console.log("template from data", template);
+      // console.log(template2);
 
       // Create the business in Firestore with the template
       const res = await axiosPrivate.post("/business", {
@@ -36,7 +37,7 @@ const CreateBusiness = () => {
         type: businessType,
         userId: user?.uid,
         userEmail: user?.email,
-        template: template, // Pass the parsed template
+        // Pass the parsed template
       });
       console.log(res);
       const id = res.data.bsuinessId;
