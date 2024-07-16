@@ -22,7 +22,8 @@ export const generateTemplate = async (
             "descriptions": [
               "general description",
               "sub-task 1 description",
-              "sub-task 2 description"
+              "sub-task 2 description",
+              "sub-task 3 description"
             ]
           },
           {
@@ -30,7 +31,8 @@ export const generateTemplate = async (
             "descriptions": [
               "general description",
               "sub-task 1 description",
-              "sub-task 2 description"
+              "sub-task 2 description",
+              "sub-task 3 description"
             ]
           }
         ]
