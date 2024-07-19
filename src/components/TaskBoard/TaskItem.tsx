@@ -50,7 +50,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         <div className="flex flex-col border-l-2 pl-2">
           <h3
             className={`font-normal text-3xl mb-4 ${
-              isExpanded && "text-teal-800"
+              isExpanded && "text-gray-700"
             }`}
           >
             {task.name}
