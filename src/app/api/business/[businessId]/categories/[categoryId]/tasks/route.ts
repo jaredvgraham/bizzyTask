@@ -1,10 +1,15 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getTasks, addTask } from "@/services/firebaseTaskService";
+import { authMiddleware } from "@/middleware/auth";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: { businessId: string; categoryId: string } }
 ) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
   try {
     const { businessId, categoryId } = params;
     if (!businessId || !categoryId) {
@@ -28,6 +33,10 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { businessId: string; categoryId: string } }
 ) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
   try {
     const body = await req.json();
     const { taskName } = body;

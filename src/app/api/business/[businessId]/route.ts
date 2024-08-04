@@ -1,3 +1,4 @@
+import { authMiddleware } from "@/middleware/auth";
 import {
   deleteBusiness,
   getBusiness,
@@ -8,6 +9,10 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: { businessId: string } }
 ) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
   try {
     const { businessId } = params;
     console.log("DELETE request received for businessId:", businessId);
@@ -35,6 +40,10 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { businessId: string } }
 ) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
   try {
     const { businessId } = params;
     if (!businessId) {

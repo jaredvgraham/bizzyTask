@@ -4,6 +4,7 @@ import {
   updateCategoryCompletion,
   deleteCategory,
 } from "@/services/firebaseCategoryService";
+import { authMiddleware } from "@/middleware/auth";
 
 function convertTimestampToISO(category: any) {
   if (category && category.createdAt && category.createdAt.toDate) {
@@ -16,6 +17,10 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { businessId: string; categoryId: string } }
 ) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
   try {
     const { businessId, categoryId } = params;
     const body = await req.json();
@@ -69,6 +74,10 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: { businessId: string; categoryId: string } }
 ) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
   try {
     const { businessId, categoryId } = params;
 

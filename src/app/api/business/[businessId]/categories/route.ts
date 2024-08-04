@@ -3,11 +3,16 @@ import {
   getCategoriesWithTasks,
   createCategory,
 } from "@/services/firebaseCategoryService";
+import { authMiddleware } from "@/middleware/auth";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: { businessId: string } }
 ) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
   console.log("GET request received for cats +++++++++++");
 
   try {
@@ -34,6 +39,10 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { businessId: string } }
 ) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
   try {
     const { name } = await req.json();
     const { businessId } = params; // Extract businessId from URL path

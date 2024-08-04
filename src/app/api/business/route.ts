@@ -6,11 +6,17 @@ import {
 } from "@/services/firebaseBusinessService";
 import { error } from "console";
 import { generateTemplate } from "@/services/chatGPTService";
+import { authMiddleware } from "@/middleware/auth";
 
 export const maxDuration = 300; // 300 seconds or 5 minutes
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const userEmail = searchParams.get("userEmail");
@@ -52,6 +58,10 @@ export async function GET(req: NextRequest) {
 //   }
 // }
 export async function POST(req: NextRequest) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
   try {
     const body = await req.json();
     const { name, description, type, userId, userEmail } = body;

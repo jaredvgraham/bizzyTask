@@ -7,6 +7,7 @@ import {
   deleteDescription,
   toggleDescriptionCompleted,
 } from "@/services/firebaseTaskService";
+import { authMiddleware } from "@/middleware/auth";
 
 export async function DELETE(
   req: NextRequest,
@@ -15,6 +16,10 @@ export async function DELETE(
   }: { params: { businessId: string; categoryId: string; taskId: string } }
 ) {
   try {
+    const authResponse = await authMiddleware(req);
+    if (authResponse) {
+      return authResponse;
+    }
     const { businessId, categoryId, taskId } = params;
     console.log("DELETE request received for taskId:", taskId);
     if (!businessId || !categoryId || !taskId) {
@@ -40,6 +45,10 @@ export async function PATCH(
     params,
   }: { params: { businessId: string; categoryId: string; taskId: string } }
 ) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
   try {
     const { businessId, categoryId, taskId } = params;
     const body = await req.json();

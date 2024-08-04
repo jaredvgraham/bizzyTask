@@ -4,11 +4,16 @@ import {
   addTeamMember,
   removeTeamMember,
 } from "@/services/firebaseTeamManagement";
+import { authMiddleware } from "@/middleware/auth";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: { businessId: string } }
 ) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
   try {
     const { businessId } = params;
     if (!businessId) {
@@ -32,6 +37,10 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { businessId: string } }
 ) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
   try {
     const { businessId } = params;
     const body = await req.json();
@@ -51,6 +60,10 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: { businessId: string } }
 ) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
   try {
     const { businessId } = params;
     const body = await req.json();

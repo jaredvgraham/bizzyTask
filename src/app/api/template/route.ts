@@ -1,8 +1,13 @@
+import { authMiddleware } from "@/middleware/auth";
 import { generateTemplate } from "@/services/chatGPTService";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
+    const authResponse = await authMiddleware(req);
+    if (authResponse) {
+      return authResponse;
+    }
     const body = await req.json();
     const { type, description } = body;
     console.log(

@@ -1,3 +1,4 @@
+import { authMiddleware } from "@/middleware/auth";
 import { calculateProgress } from "@/services/firebaseProgressService";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -5,6 +6,10 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { businessId: string } }
 ) {
+  const authResponse = await authMiddleware(req);
+  if (authResponse) {
+    return authResponse;
+  }
   try {
     const { businessId } = params;
     if (!businessId) {
