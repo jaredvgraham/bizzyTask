@@ -3,6 +3,7 @@ import { axiosPrivate } from "@/axios/axios";
 import { Category } from "@/types";
 import { useWebSocket } from "./WebSocketContext";
 import { set } from "nprogress";
+import { useAuth } from "./AuthContext";
 
 interface CategoriesContextType {
   categories: Category[];
@@ -29,6 +30,7 @@ export const CategoriesProvider: React.FC<{
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { socket } = useWebSocket();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchCategoriesAndTasks = async () => {
@@ -47,7 +49,7 @@ export const CategoriesProvider: React.FC<{
       }
     };
     fetchCategoriesAndTasks();
-  }, [businessId]);
+  }, [businessId, user]);
 
   useEffect(() => {
     if (socket) {

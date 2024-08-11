@@ -4,6 +4,7 @@ import { admin } from "@/lib/firebaseAdmin";
 
 export async function authMiddleware(req: NextRequest) {
   const token = req.headers.get("Authorization")?.split("Bearer ")[1];
+  console.log("Token:", token); // Log the token for debugging
 
   if (!token) {
     return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });

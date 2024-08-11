@@ -36,9 +36,15 @@ const Navbar = () => {
         const pathParts = pathname.split("/");
         if (pathParts.length >= 3 && pathParts[1] === "business") {
           const businessId = pathParts[2];
-          const businessDoc = await axiosPrivate.get(`/business/${businessId}`);
-          if (businessDoc) {
-            setBusinessName(businessDoc.data.name);
+          try {
+            const businessDoc = await axiosPrivate.get(
+              `/business/${businessId}`
+            );
+            if (businessDoc) {
+              setBusinessName(businessDoc.data.name);
+            }
+          } catch (error) {
+            console.error("Error fetching business name: ", error);
           }
         }
       }
